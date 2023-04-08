@@ -3,6 +3,35 @@
 #include <iomanip>
 #include <fstream>
 
+void print_block_server(std::vector<config_file> block_server)
+{
+    for(size_t i = 0; i < block_server.size() - 1; i++)
+    {
+        std::cout << block_server[i].client_max_body_size << std::endl;
+        std::cout << block_server[i].error_log << std::endl;
+        std::cout << block_server[i].listen << std::endl;
+        std::cout << block_server[i].root << std::endl;
+        std::cout << block_server[i].error_pages << std::endl;
+        std::cout << block_server[i].server_name << std::endl;
+        std::cout << "*server : " << block_server[i].server << std::endl;
+        std::cout << "*port : " << block_server[i].port << std::endl;
+        std::cout << "--------------" << std::endl;
+        for(size_t l = 0; l < block_server[i].list_of_location.size(); l++)
+        {
+            std::cout << "- - - " << l << std::endl;
+            std::cout << block_server[i].list_of_location[l].allow_method << std::endl;
+            std::cout << block_server[i].list_of_location[l].autoindex << std::endl;
+            std::cout << block_server[i].list_of_location[l].index << std::endl;
+            std::cout << block_server[i].list_of_location[l].returno << std::endl;
+            std::cout << block_server[i].list_of_location[l].path << std::endl;
+        }
+            std::cout << "---------------" << std::endl;
+        if (block_server[i].listen.empty())
+            std::cout << "hi roma listen is empty" << std::endl;
+        std::cout << "________________________________________________________________" << std::endl;
+    }
+}
+
 void location_pars(std::vector<config_file> *block_server, std::vector<std::string> temp_split_data, size_t ifind, size_t j, size_t i)
 {
     location_struct tmp_node;
@@ -40,16 +69,22 @@ void block_to_variable(std::vector<config_file> *block_server)
             temp_split_data.push_back(roma);
             roma = strtok(NULL, ";");
         }
-        std::cout << "------split data------------" << i << std::endl;
         //just here i set the data to struct config_file
         for(; j < temp_split_data.size(); j++)
         {
-            std::cout << "here idoiot " << j << temp_split_data[j] << std::endl;
             size_t ifind = temp_split_data[j].find(" ");//split, for after the space in every line
             if (ifind < temp_split_data[j].size())
             {
                 if (temp_split_data[j].compare(0, 7, "listen ") == 0)
+                {//127.0.0.1:8080
                     (*block_server)[i].listen = temp_split_data[j].substr(ifind + 1);
+                    ifind = (*block_server)[i].listen.find(":");
+                    if (ifind < temp_split_data[j].size())
+                    {
+                        (*block_server)[i].server = (*block_server)[i].listen.substr(0, ifind);
+                        (*block_server)[i].port = (*block_server)[i].listen.substr(ifind + 1);
+                    }
+                }
                 else if (temp_split_data[j].compare(0, 12, "server_name ") == 0)
                     (*block_server)[i].server_name = temp_split_data[j].substr(ifind + 1);
                 else if (temp_split_data[j].compare(0, 5, "root ") == 0)
@@ -65,11 +100,10 @@ void block_to_variable(std::vector<config_file> *block_server)
                     location_pars(block_server, temp_split_data, ifind, j, i);
             }
         }
-        std::cout << "------<<<<<>>>>>----------" << std::endl;
     }
 }
 
-void content_to_list(std::string filecontent)
+std::vector<config_file> content_to_list(std::string filecontent)
 {
     std::vector<config_file> block_server;
     char *roma = strtok((char *)(filecontent.c_str()), "}");
@@ -83,7 +117,7 @@ void content_to_list(std::string filecontent)
     block_to_variable(&block_server);//just i parse the block
 
     //just i print here the content of config file "block by block"
-    for(size_t i = 0; i < block_server.size() - 1; i++)
+    /*for(size_t i = 0; i < block_server.size() - 1; i++)
     {
         std::cout << block_server[i].client_max_body_size << std::endl;
         std::cout << block_server[i].error_log << std::endl;
@@ -91,6 +125,8 @@ void content_to_list(std::string filecontent)
         std::cout << block_server[i].root << std::endl;
         std::cout << block_server[i].error_pages << std::endl;
         std::cout << block_server[i].server_name << std::endl;
+        std::cout << "*server : " << block_server[i].server << std::endl;
+        std::cout << "*port : " << block_server[i].port << std::endl;
         std::cout << "--------------" << std::endl;
         for(size_t l = 0; l < block_server[i].list_of_location.size(); l++)
         {
@@ -104,11 +140,12 @@ void content_to_list(std::string filecontent)
             std::cout << "---------------" << std::endl;
         if (block_server[i].listen.empty())
             std::cout << "hi roma listen is empty" << std::endl;
-        std::cout << "___________________________________" << std::endl;
-    }
+        std::cout << "________________________________________________________________" << std::endl;
+    }*/
+    return block_server;
 }
 
-void pars_confile(char *configfile)
+std::vector<config_file> pars_confile(char *configfile)
 {
     //just i check is the file is open. and is not empty
     std::string filecontent;
@@ -127,7 +164,8 @@ void pars_confile(char *configfile)
             std::string line;
             while (getline(cfile, line))
                 filecontent.append(line);
-            content_to_list(filecontent);//here were i parse the content of config file to list
+            std::vector<config_file> block_server = content_to_list(filecontent);//here were i parse the content of config file to list
+            return block_server;
         }
     }
     else
@@ -135,4 +173,5 @@ void pars_confile(char *configfile)
         std::cout << "config file is not open 'jrifi sbab'" << std::endl;
         exit(1);
     }
+    exit(1);
 }

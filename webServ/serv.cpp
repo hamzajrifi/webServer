@@ -70,8 +70,9 @@ int main(int argc, char **argv)
     (void)argv;
     if (argc == 2)
     {
-        //pars_confile(argv[1]);// just i pars the config file
-        int server = create_socket(0, "8080");
+        std::vector<config_file> block_server = pars_confile(argv[1]);// just i pars the config file
+        //print_block_server(block_server);// just a function to print the content to config file
+        int server = create_socket(0, block_server[0].port.c_str());
         while (1)
         {
             fd_set reads;
@@ -111,8 +112,16 @@ int main(int argc, char **argv)
                         if (client->request_data_struct->method.compare("POST") == 0)
                         {
                             pars_request_body(client, data);
-                            if (client->request_data_struct->body.size() == (size_t)atoi(client->request_data_struct->content_Length.c_str()))
-                                break;
+                            //just i checked for chunked data
+                            if (client->request_data_struct->transfer_Encoding.compare("chunked") == 0)
+                            {
+                                size_t ifind = client->request_data_struct->body.find("\r\n0\r\n");
+                                if (ifind < client->request_data_struct->body.size())
+                                    break;
+                            }
+                            else//here just for content-length
+                                if (client->request_data_struct->body.size() == (size_t)atoi(client->request_data_struct->content_Length.c_str()))
+                                    break;
                         }
                     }//end of test
                     if (client->received < 1)
@@ -129,6 +138,8 @@ int main(int argc, char **argv)
                         std::cout << client->request_data_struct->content_Length << std::endl;
                         std::cout << client->request_data_struct->transfer_Encoding << std::endl;
                         std::cout << client->request_data_struct->content_Type << std::endl;
+                        std::cout << "-------\n" << client->request_data_struct->body << "----\n";
+                        std::cout << data << std::endl;
                         //std::cout << "---->im the client number: << " << client->socket << ">>\nhere your request -->" << data << std::endl;
                         //pars_request(client);
                         //sleep(30);
