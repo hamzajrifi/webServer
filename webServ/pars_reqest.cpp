@@ -36,8 +36,6 @@ void pars_request_header(client_info *client)
 
 void pars_request_body(client_info *client, std::string data)
 {
-    //content_Length: 123
-    //Transfer-Encoding: chunked
     //Content-Type: multipart/form-data; boundary=----WebKitFormBoundar
     std::vector<std::string> temp_split_data;
     // just i split request block with "\r\n" to get every line
@@ -46,7 +44,6 @@ void pars_request_body(client_info *client, std::string data)
     std::string body = request.substr(ifind + 4);
     
     client->request_data_struct->body = body;
-    std::cout << "body" << body << std::endl;
 }
 
 void pars_request(client_info *client)

@@ -20,6 +20,8 @@ struct config_file
 {
     std::string block;
     std::string listen;
+    std::string server;
+    std::string port;
     std::string server_name;
     std::string root;
     std::string error_log;
@@ -51,6 +53,8 @@ struct client_info
 static struct client_info *clients = 0;
 int create_socket(const char* host, const char* port);
 void pars_request(client_info *pars_request);
-void pars_confile(char *configfile);
+std::vector<config_file> pars_confile(char *configfile);
 void pars_request_header(client_info *client);
 void pars_request_body(client_info *client, std::string data);
+
+void print_block_server(std::vector<config_file> block_server);//just a temp fuction i will delete them later. "mat9ala9ch lina mr jrifi"
