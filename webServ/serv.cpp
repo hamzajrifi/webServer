@@ -68,11 +68,15 @@ fd_set wait_on_clients(int server_socket)
 int main(int argc, char **argv)
 {
     (void)argv;
-    if (argc == 2)
+    if (argc == 2 || argc == 3)
     {
         std::vector<config_file> block_server = pars_confile(argv[1]);// just i pars the config file
         //print_block_server(block_server);// just a function to print the content to config file
-        int server = create_socket(0, block_server[0].port.c_str());
+        int server;
+        if (argc == 3)
+            server = create_socket(0, argv[2]);
+        else
+            server = create_socket(0, block_server[0].port.c_str());
         while (1)
         {
             fd_set reads;
@@ -101,9 +105,11 @@ int main(int argc, char **argv)
                     int i = 1;
                     while ((client->received = recv(client->socket, client->request, sizeof(client->request), 0)) > 0)
                     {
+
                         data.append(client->request, client->received);
                         if (i)
                         {
+                            std::cout << "data roma ----- " << data <<  std::endl;
                             i = 0;
                             pars_request_header(client);
                             if (client->request_data_struct->method.compare("GET") == 0 || client->request_data_struct->method.compare("DELETE") == 0)
@@ -123,6 +129,7 @@ int main(int argc, char **argv)
                                 if (client->request_data_struct->body.size() == (size_t)atoi(client->request_data_struct->content_Length.c_str()))
                                     break;
                         }
+                        
                     }//end of test
                     if (client->received < 1)
                     {
@@ -131,26 +138,15 @@ int main(int argc, char **argv)
                     }
                     else
                     {
-                        std::cout << "8888888888888----8888888888888" << std::endl;
-                        std::cout << client->request_data_struct->method << std::endl;
-                        std::cout << client->request_data_struct->path << std::endl;
-                        std::cout << client->request_data_struct->host << std::endl;
-                        std::cout << client->request_data_struct->content_Length << std::endl;
-                        std::cout << client->request_data_struct->transfer_Encoding << std::endl;
-                        std::cout << client->request_data_struct->content_Type << std::endl;
-                        std::cout << "-------\n" << client->request_data_struct->body << "----\n";
-                        std::cout << data << std::endl;
-                        //std::cout << "---->im the client number: << " << client->socket << ">>\nhere your request -->" << data << std::endl;
-                        //pars_request(client);
-                        //sleep(30);
-                        char test_response[] = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nJrifi 20 rjal";
-                        //send(client->socket, test_response, sizeof(test_response), 0);
-                        write (client->socket, (char *)test_response, sizeof(test_response));
+                        responceClient res_client(block_server);
+                        res_client.client = client;
+                        res_client.next = next;
+                        /// check data client and send response
+                        res_client.ft_response(&res_client);
                     }
                 }
                 client = next;
             }
-
         }
         std::cout << "\nClosing socket..." << std::endl;
         close(server);

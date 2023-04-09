@@ -1,9 +1,15 @@
+#ifndef HEADER_H
+#define HEADER_H
+
 #include <iostream>
 #include <sys/types.h>
 #include <netdb.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <vector>
+
+#include "../response/response.hpp"
+class responce_clinet;
 
 #define MAX_REQUEST_SIZE 2047
 
@@ -20,7 +26,7 @@ struct config_file
 {
     std::string block;
     std::string listen;
-    std::string server;
+    std::string server;//ip
     std::string port;
     std::string server_name;
     std::string root;
@@ -58,3 +64,5 @@ void pars_request_header(client_info *client);
 void pars_request_body(client_info *client, std::string data);
 
 void print_block_server(std::vector<config_file> block_server);//just a temp fuction i will delete them later. "mat9ala9ch lina mr jrifi"
+
+#endif
