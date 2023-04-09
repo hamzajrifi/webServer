@@ -83,6 +83,21 @@ void block_to_variable(std::vector<config_file> *block_server)
                     {
                         (*block_server)[i].server = (*block_server)[i].listen.substr(0, ifind);
                         (*block_server)[i].port = (*block_server)[i].listen.substr(ifind + 1);
+                        unsigned long a = 0;
+                        while (a < (*block_server)[i].port.size())
+                        {
+                            if (!std::isdigit((*block_server)[i].port[a]))
+                            {
+                                std::cout << "we suport just digits in port. please inter a valid one or 'contact mr jrifi for more info'" << std::endl;
+                                exit(1);
+                            }
+                            a++;
+                        }
+                        if (stoi((*block_server)[i].port) <= 0 || stoi((*block_server)[i].port) > 65535)
+                            {
+                                std::cout << "the max port number is 65535. or 'contact mr jrifi can open one but just for you'" << std::endl;
+                                exit(1);
+                            }
                     }
                 }
                 else if (temp_split_data[j].compare(0, 12, "server_name ") == 0)
