@@ -76,7 +76,6 @@ int main(int argc, char **argv)
     {
         std::vector<config_file> block_server = pars_confile(argv[1]);// just i pars the config file
         //print_block_server(block_server);// just a function to print the content to config file
-        //here i should creat a socket for every block_server....
         unsigned long i = 0;
         std::vector<int> server;
         size_t block_size = (block_server).size();

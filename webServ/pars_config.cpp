@@ -62,6 +62,11 @@ void location_pars(std::vector<config_file> *block_server, std::vector<std::stri
 void check_port(std::vector<config_file> *block_server, size_t ifind, size_t i)
 {
     (*block_server)[i].port = (*block_server)[i].listen.substr(ifind + 1);
+    if ((*block_server)[i].port.empty())
+    {
+        std::cout << "just error in port" << std::endl;
+        exit(1);
+    }
     unsigned long a = 0;
     while (a < (*block_server)[i].port.size())
     {
@@ -151,6 +156,11 @@ void block_to_variable(std::vector<config_file> *block_server)
                         check_port(block_server, ifind, i);
                         check_ip(block_server, ifind, i);
                     }
+                    else
+                    {
+                        std::cout << "just error in config file port" << std::endl;
+                        exit(1);
+                    }
                 }
                 else if (temp_split_data[j].compare(0, 12, "server_name ") == 0)
                     (*block_server)[i].server_name = temp_split_data[j].substr(ifind + 1);
@@ -168,21 +178,33 @@ void block_to_variable(std::vector<config_file> *block_server)
                     //here just the location content
                     location_pars(block_server, temp_split_data, ifind, j, i);
             }
-
+        }
+        if ((*block_server)[i].listen.empty())
+        {
+            std::cout << "listen is necessary in that idoit server. 'jrifi is a good listener too.'" << std::endl;
+            exit(1);
         }
     }
 }
 
 std::vector<config_file> content_to_list(std::string filecontent)
 {
+    int indice = 0;
     std::vector<config_file> block_server;
     char *roma = strtok((char *)(filecontent.c_str()), "}");
     while (roma != nullptr)
     {
         config_file tmp_node;
         tmp_node.block = roma;
+        if (tmp_node.block.compare("\n") != 0)
+            indice = 1;
         block_server.push_back(tmp_node);
         roma = strtok(NULL, "}");
+    }
+    if (indice == 0)
+    {
+        std::cout << "error in config file just \\n" << std::endl;
+        exit(1);
     }
     block_to_variable(&block_server);//just i parse the block
     return block_server;
