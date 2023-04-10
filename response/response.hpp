@@ -16,10 +16,10 @@ class  responceClient{
 
     char    buffer_response[1024];
     char    statusCode[20];
-    int     nbrstat;
+    int     nbrstatus;
     char    res_body[1024];
     int     contenet_lenght;
-    char    *content_type;
+    std::string content_type;
     size_t  centenet_lenght;
     ///
     char    *mediaType;
@@ -38,8 +38,10 @@ class  responceClient{
     static int  deleteMethode(std::string methode);
     int         ft_response(responceClient *res_client);
     int         noLocation();
+    int         send_data();
 };
 
+const char *get_content_type(const char* path) ;
 
 
 #endif

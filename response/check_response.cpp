@@ -32,8 +32,13 @@ int responceClient::checkUri(std::string uri)
 
     std::cout << "path = " << uri << std::endl;
     if (stat(uri.c_str(), &info) != 0)
-        return 404;
-
+    {
+        nbrstatus = 400;
+        content_type = get_content_type(".txt");
+        contenet_lenght = 10;
+        // res_body = "roma jrifi";
+        return send_data();
+    }
     return 0;
 }
 
@@ -165,19 +170,20 @@ int responceClient::ft_response(responceClient *res_client)
 
             for(size_t j=0; j < block_server[i].list_of_location.size() - 1; i++)
             {
-                int k = 0;
-                while (block_server[i].list_of_location[j].path[k] == client->request_data_struct->path[k])
-                {}
+                // int k = 0;
+                // while (block_server[i].list_of_location[j].path[k] == client->request_data_struct->path[k])
+                // {}
             }
-            if (!checkUri(res_client->client->request_data_struct->path))
-                return 404;
+            // if (!checkUri(res_client->client->request_data_struct->path))
+                // return 404;
             //// methode 
             methodeFunction[res_client->client->request_data_struct->method]("TEST");
 
-
+            char test_response[] = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nJrifi 20 rjal";
+            write (client->socket, (char *)test_response, sizeof(test_response));
             /// don't forget to check protocol version !!!!!!
             sprintf(buffer_response, "HTTP/1.1 %s\r\nContent-Length: %u\r\nContent-Type: %s\r\n\r\n%s",\
-                    statusCode, contenet_lenght, content_type, res_body);
+                    "ok", contenet_lenght, content_type.c_str(), "hjrifi");
             write(res_client->client->socket, (char *)buffer_response, strlen(buffer_response));        
             return 0;
         }
