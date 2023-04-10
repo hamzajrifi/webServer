@@ -5,7 +5,10 @@
 
 void print_block_server(std::vector<config_file> block_server)
 {
-    for(size_t i = 0; i < block_server.size() - 1; i++)
+    size_t block_size = (block_server).size();
+    if ((block_server).size() == 1)
+        block_size = 2;
+    for(size_t i = 0; i < block_size - 1; i++)
     {
         std::cout << block_server[i].client_max_body_size << std::endl;
         std::cout << block_server[i].error_log << std::endl;
@@ -56,11 +59,75 @@ void location_pars(std::vector<config_file> *block_server, std::vector<std::stri
     (*block_server)[i].list_of_location.push_back(tmp_node);
 }
 
+void check_port(std::vector<config_file> *block_server, size_t ifind, size_t i)
+{
+    (*block_server)[i].port = (*block_server)[i].listen.substr(ifind + 1);
+    unsigned long a = 0;
+    while (a < (*block_server)[i].port.size())
+    {
+        if (!std::isdigit((*block_server)[i].port[a]))
+        {
+            std::cout << "we suport just digits in port. please inter a valid one or 'contact mr jrifi for more info'" << std::endl;
+            exit(1);
+        }
+        a++;
+    }
+    if (stoi((*block_server)[i].port) <= 0 || stoi((*block_server)[i].port) > 65535)
+    {
+        std::cout << "the max port number is 65535. or 'contact mr jrifi can open one but just for you'" << std::endl;
+        exit(1);
+    }
+}
+
+void check_ip(std::vector<config_file> *block_server, size_t ifind, size_t i)
+{
+    std::vector<std::string> ip;
+    std::string tmp_server;
+    (*block_server)[i].server = (*block_server)[i].listen.substr(0, ifind);
+    tmp_server = (*block_server)[i].server;
+    char *roma = strtok((char *)((*block_server)[i].server.c_str()), ".");
+    while (roma != nullptr)
+    {
+        ip.push_back(roma);
+        roma = strtok(NULL, ".");
+    }
+    (*block_server)[i].server = tmp_server;
+    if (ip.size() != 4)
+    {
+        std::cout << "error in configfile : ip" << std::endl;
+        exit(1);
+    }
+    size_t j = 0;
+    while (j < ip.size())
+    {
+        unsigned long a = 0;
+        while (a < ip[j].size())
+        {
+            if (!std::isdigit(ip[j][a]))
+            {
+                std::cout << "we suport just digits in ip. please inter a valid one or 'contact mr jrifi for more info'" << std::endl;
+                exit(1);
+            }
+            a++;
+        }
+        if (stoi(ip[j]) < 0 || stoi(ip[j]) > 255)
+        {
+            std::cout << "error in config file : ip" << std::endl;
+            exit(1);
+        }
+        j++;
+    }
+    std::cout << std::endl;
+}
+
 void block_to_variable(std::vector<config_file> *block_server)
 {
     size_t j = 0;
+    size_t block_size = (*block_server).size();
     std::vector<std::string> temp_split_data;
-    for(size_t i = 0; i < (*block_server).size() - 1; i++)
+    if ((*block_server).size() == 1)
+        block_size = 2;
+    for(size_t i = 0; i < block_size - 1; i++)
     {
         // just i split server block with ";"
         char *roma = strtok((char *)((*block_server)[i].block.c_str()), ";");
@@ -81,23 +148,8 @@ void block_to_variable(std::vector<config_file> *block_server)
                     ifind = (*block_server)[i].listen.find(":");
                     if (ifind < temp_split_data[j].size())
                     {
-                        (*block_server)[i].server = (*block_server)[i].listen.substr(0, ifind);
-                        (*block_server)[i].port = (*block_server)[i].listen.substr(ifind + 1);
-                        unsigned long a = 0;
-                        while (a < (*block_server)[i].port.size())
-                        {
-                            if (!std::isdigit((*block_server)[i].port[a]))
-                            {
-                                std::cout << "we suport just digits in port. please inter a valid one or 'contact mr jrifi for more info'" << std::endl;
-                                exit(1);
-                            }
-                            a++;
-                        }
-                        if (stoi((*block_server)[i].port) <= 0 || stoi((*block_server)[i].port) > 65535)
-                            {
-                                std::cout << "the max port number is 65535. or 'contact mr jrifi can open one but just for you'" << std::endl;
-                                exit(1);
-                            }
+                        check_port(block_server, ifind, i);
+                        check_ip(block_server, ifind, i);
                     }
                 }
                 else if (temp_split_data[j].compare(0, 12, "server_name ") == 0)
@@ -110,10 +162,13 @@ void block_to_variable(std::vector<config_file> *block_server)
                     (*block_server)[i].error_log = temp_split_data[j].substr(ifind + 1);
                 else if (temp_split_data[j].compare(0, 21, "client_max_body_size ") == 0)
                     (*block_server)[i].client_max_body_size = temp_split_data[j].substr(ifind + 1);
+                else if (temp_split_data[j].compare(0, 6, "index ") == 0)
+                    (*block_server)[i].index = temp_split_data[j].substr(ifind + 1);
                 else if (temp_split_data[j].compare(0, 9, "location ") == 0)
                     //here just the location content
                     location_pars(block_server, temp_split_data, ifind, j, i);
             }
+
         }
     }
 }
@@ -130,33 +185,6 @@ std::vector<config_file> content_to_list(std::string filecontent)
         roma = strtok(NULL, "}");
     }
     block_to_variable(&block_server);//just i parse the block
-
-    //just i print here the content of config file "block by block"
-    /*for(size_t i = 0; i < block_server.size() - 1; i++)
-    {
-        std::cout << block_server[i].client_max_body_size << std::endl;
-        std::cout << block_server[i].error_log << std::endl;
-        std::cout << block_server[i].listen << std::endl;
-        std::cout << block_server[i].root << std::endl;
-        std::cout << block_server[i].error_pages << std::endl;
-        std::cout << block_server[i].server_name << std::endl;
-        std::cout << "*server : " << block_server[i].server << std::endl;
-        std::cout << "*port : " << block_server[i].port << std::endl;
-        std::cout << "--------------" << std::endl;
-        for(size_t l = 0; l < block_server[i].list_of_location.size(); l++)
-        {
-            std::cout << "- - - " << l << std::endl;
-            std::cout << block_server[i].list_of_location[l].allow_method << std::endl;
-            std::cout << block_server[i].list_of_location[l].autoindex << std::endl;
-            std::cout << block_server[i].list_of_location[l].index << std::endl;
-            std::cout << block_server[i].list_of_location[l].returno << std::endl;
-            std::cout << block_server[i].list_of_location[l].path << std::endl;
-        }
-            std::cout << "---------------" << std::endl;
-        if (block_server[i].listen.empty())
-            std::cout << "hi roma listen is empty" << std::endl;
-        std::cout << "________________________________________________________________" << std::endl;
-    }*/
     return block_server;
 }
 

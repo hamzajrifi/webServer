@@ -24,6 +24,7 @@ struct config_file
     std::string port;
     std::string server_name;
     std::string root;
+    std::string index;
     std::string error_log;
     std::string error_pages;
     std::string client_max_body_size;

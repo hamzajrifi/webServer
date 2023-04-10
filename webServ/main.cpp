@@ -72,7 +72,6 @@ fd_set wait_on_clients(std::vector<int> server_socket)
 
 int main(int argc, char **argv)
 {
-    (void)argv;
     if (argc == 2)
     {
         std::vector<config_file> block_server = pars_confile(argv[1]);// just i pars the config file
@@ -80,9 +79,12 @@ int main(int argc, char **argv)
         //here i should creat a socket for every block_server....
         unsigned long i = 0;
         std::vector<int> server;
-        while (i < block_server.size() - 1)//just a create a socket for evrey block in config file
-        {
-            server.push_back(create_socket(0, block_server[i].port.c_str()));
+        size_t block_size = (block_server).size();
+        if ((block_server).size() == 1)
+            block_size = 2;
+        while (i < block_size - 1)//just a create a socket for every block in config file
+        {//block_server[i].server.c_str()
+            server.push_back(create_socket(block_server[i].server.c_str(), block_server[i].port.c_str()));
             i++;
         }
         while (1)
@@ -90,7 +92,7 @@ int main(int argc, char **argv)
             fd_set reads;
             reads = wait_on_clients(server);
             i = 0;
-            while (i < block_server.size() - 1)//just a chkeck for new connection for every lisenner
+            while (i < block_size - 1)//just a chkeck for new connection for every lisenner
             {
                 if (FD_ISSET(server[i], &reads))//new connection has been detected
                 {
@@ -117,7 +119,7 @@ int main(int argc, char **argv)
         }
         std::cout << "\nClosing socket..." << std::endl;
         //close(server);
-        while (i < block_server.size() - 1)
+        while (i < block_size - 1)
         {
             close(server[i]);
             i++;
