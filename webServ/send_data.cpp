@@ -40,21 +40,10 @@ void client_send_recv(client_info *client, fd_set reads, std::vector<config_file
         }
         else
         {
-            std::cout << "8888888888888----8888888888888" << std::endl;
-            std::cout << client->request_data_struct->method << std::endl;
-            std::cout << client->request_data_struct->path << std::endl;
-            std::cout << client->request_data_struct->host << std::endl;
-            std::cout << client->request_data_struct->content_Length << std::endl;
-            std::cout << client->request_data_struct->transfer_Encoding << std::endl;
-            std::cout << client->request_data_struct->content_Type << std::endl;
-            std::cout << "-------\n" << client->request_data_struct->body << "----\n";
-            std::cout << data << std::endl;
-            //std::cout << "---->im the client number: << " << client->socket << ">>\nhere your request -->" << data << std::endl;
-            //pars_request(client);
-            //sleep(30);
-            char test_response[] = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nJrifi 20 rjal";
-            //send(client->socket, test_response, sizeof(test_response), 0);
-            write (client->socket, (char *)test_response, sizeof(test_response));
+             responceClient res_client(block_server);
+            res_client.client = client;
+            /// check data client and send response
+            res_client.ft_response(&res_client);
         }
     }
 }
