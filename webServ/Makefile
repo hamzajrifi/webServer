@@ -1,6 +1,6 @@
 name = webserver
 
-C_FLAGS = -std=c++98 -Wall -Wextra -Werror # -fsanitize=address
+C_FLAGS = -std=c++98 -Wall -Wextra -Werror  -fsanitize=address
 
 all : ${name}
 
@@ -10,7 +10,9 @@ C_FILES = 	pars_reqest.cpp \
 			pars_config.cpp\
 			send_data.cpp\
 			../response/send_response.cpp\
-			../response/check_response.cpp
+			../response/check_response.cpp\
+			../response/utils.cpp\
+			../response/status_codes.cpp
 
 
 ${name}: $(C_FILES)

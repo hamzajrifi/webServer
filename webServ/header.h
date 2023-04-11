@@ -12,6 +12,7 @@ class responce_clinet;
 
 #define MAX_REQUEST_SIZE 2047
 
+
 struct location_struct
 {
     std::string path;
