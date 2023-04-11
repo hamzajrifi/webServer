@@ -32,13 +32,13 @@ int responceClient::checkUri(std::string uri)
 
     std::cout << "path = " << uri << std::endl;
     if (stat(uri.c_str(), &info) != 0)
+        send_404();
+    else
     {
-        nbrstatus = 400;
-        content_type = get_content_type(".txt");
-        contenet_lenght = 10;
-        // res_body = "roma jrifi";
-        return send_data();
+        // if (block_server[nBlock].index)    
+        std::cout << block_server[nBlock].index << std::endl;
     }
+
     return 0;
 }
 
@@ -152,39 +152,38 @@ int     responceClient::noLocation()
 
 int responceClient::ft_response(responceClient *res_client)
 {
-    if (MAX_REQUEST_SIZE == res_client->client->received)
-        return 400;
+    // if (MAX_REQUEST_SIZE == res_client->client->received)
+        // return 400;
     ///#### check server block
     int sfind = client->request_data_struct->host.find(":");
     std::string host_serv = client->request_data_struct->host.substr(0, sfind);
     std::string port_serv = client->request_data_struct->host.substr(sfind + 1, client->request_data_struct->host.length());
-    
+    std::cout << "check block server " << std::endl;
     for(size_t i=0; i < block_server.size() - 1; i++){
         if (!block_server[i].server.compare(host_serv) && !block_server[i].port.compare(port_serv))
         {   
             root = block_server[i].root;
             // index = block_server[0].index;
             //#### matching location
+            // client->nBlock = i;
             if (block_server[i].list_of_location.size() == 0)
                 return  noLocation();
 
-            for(size_t j=0; j < block_server[i].list_of_location.size() - 1; i++)
-            {
-                // int k = 0;
-                // while (block_server[i].list_of_location[j].path[k] == client->request_data_struct->path[k])
-                // {}
-            }
-            // if (!checkUri(res_client->client->request_data_struct->path))
-                // return 404;
+            // for(size_t j=0; j < block_server[i].list_of_location.size() - 1; i++)
+            // {
+            //     // int k = 0;
+            //     // while (block_server[i].list_of_location[j].path[k] == client->request_data_struct->path[k])
+            //     // {}
+            // }
             //// methode 
             methodeFunction[res_client->client->request_data_struct->method]("TEST");
 
-            char test_response[] = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nJrifi 20 rjal";
+            char test_response[] = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nhave location";
             write (client->socket, (char *)test_response, sizeof(test_response));
             /// don't forget to check protocol version !!!!!!
-            sprintf(buffer_response, "HTTP/1.1 %s\r\nContent-Length: %u\r\nContent-Type: %s\r\n\r\n%s",\
-                    "ok", contenet_lenght, content_type.c_str(), "hjrifi");
-            write(res_client->client->socket, (char *)buffer_response, strlen(buffer_response));        
+            // sprintf(buffer_response, "HTTP/1.1 %s\r\nContent-Length: %u\r\nContent-Type: %s\r\n\r\n%s",\
+            //         "ok", contenet_lenght, content_type.c_str(), "hjrifi");
+            // write(res_client->client->socket, (char *)buffer_response, strlen(buffer_response));        
             return 0;
         }
     }
