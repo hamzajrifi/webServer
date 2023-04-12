@@ -122,7 +122,18 @@ void check_ip(std::vector<config_file> *block_server, size_t ifind, size_t i)
         }
         j++;
     }
-    std::cout << std::endl;
+}
+
+void parce_errorPage(std::vector<config_file> *block_server, size_t i)
+{
+    size_t ifind = (*block_server)[i].error_pages.find(" ");
+    if (ifind < (*block_server)[i].error_pages.size())
+        (*block_server)[i].error_page_kv.insert(std::pair <std::string, std::string> ((*block_server)[i].error_pages.substr(0, ifind), (*block_server)[i].error_pages.substr(ifind + 1)));
+    else
+    {
+        std::cout << "error in config file error page" << std::endl;
+        exit(1);
+    }
 }
 
 void block_to_variable(std::vector<config_file> *block_server)
@@ -158,7 +169,7 @@ void block_to_variable(std::vector<config_file> *block_server)
                     }
                     else
                     {
-                        std::cout << "just error in config file port" << std::endl;
+                        std::cout << "just error in config file listen" << std::endl;
                         exit(1);
                     }
                 }
@@ -167,7 +178,17 @@ void block_to_variable(std::vector<config_file> *block_server)
                 else if (temp_split_data[j].compare(0, 5, "root ") == 0)
                     (*block_server)[i].root = temp_split_data[j].substr(ifind + 1);
                 else if (temp_split_data[j].compare(0, 12, "error_pages ") == 0)
+                {
                     (*block_server)[i].error_pages = temp_split_data[j].substr(ifind + 1);
+                    parce_errorPage(block_server, i);
+                    //std::cout << "size:" << (*block_server)[i].error_page_kv.size() << std::endl;
+                    //std::map<std::string, std::string>::iterator it = (*block_server)[i].error_page_kv.begin();
+                    //while (it != (*block_server)[i].error_page_kv.end())
+                    //{
+                    //    std::cout << "content :" << it->first << "|" << it->second << std::endl;
+                    //    ++it;
+                    //}
+                }
                 else if (temp_split_data[j].compare(0, 10, "error_log ") == 0)
                     (*block_server)[i].error_log = temp_split_data[j].substr(ifind + 1);
                 else if (temp_split_data[j].compare(0, 21, "client_max_body_size ") == 0)
@@ -175,7 +196,7 @@ void block_to_variable(std::vector<config_file> *block_server)
                 else if (temp_split_data[j].compare(0, 6, "index ") == 0)
                     (*block_server)[i].index = temp_split_data[j].substr(ifind + 1);
                 else if (temp_split_data[j].compare(0, 9, "location ") == 0)
-                    //here just the location content
+                    // here just the location content
                     location_pars(block_server, temp_split_data, ifind, j, i);
             }
         }

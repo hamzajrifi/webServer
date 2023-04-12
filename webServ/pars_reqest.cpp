@@ -15,8 +15,8 @@ void pars_request_header(client_info *client)
         temp_split_data.push_back(roma);
         roma = strtok(NULL, "\r\n");
     }
-    if (temp_split_data[0].compare(0, 5, "GET /") == 0 || temp_split_data[0].compare(0, 8, "DELETE /") == 0 || temp_split_data[0].compare(0, 6, "POST /") == 0)
-    {
+    //if (temp_split_data[0].compare(0, 5, "GET /") == 0 || temp_split_data[0].compare(0, 8, "DELETE /") == 0 || temp_split_data[0].compare(0, 6, "POST /") == 0)
+    //{
         client->request_data_struct->method = strtok(client->request, " ");
         client->request_data_struct->path = strtok(NULL, " ");
         for(size_t j = 0; j < temp_split_data.size(); j++)
@@ -31,7 +31,7 @@ void pars_request_header(client_info *client)
             else if (temp_split_data[j].compare(0, 14, "Content-Type: ") == 0)
                 client->request_data_struct->content_Type = temp_split_data[j].substr(ifind + 1);
         }
-    }
+    //}
 }
 
 void pars_request_body(client_info *client, std::string data)
@@ -42,7 +42,7 @@ void pars_request_body(client_info *client, std::string data)
     std::string request = data;
     size_t ifind = request.find("\r\n\r\n");
     std::string body = request.substr(ifind + 4);
-    
+
     client->request_data_struct->body = body;
 }
 

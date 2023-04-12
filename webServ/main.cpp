@@ -19,6 +19,8 @@ struct client_info *get_client(int s)
         std::cout << "Out of memory." << std::endl;
         exit(1);
     }
+    newclient->indice_header = 1;
+    newclient->indice_end_body = 0;
     newclient->next = clients;
     clients = newclient;
     return newclient;
@@ -75,14 +77,14 @@ int main(int argc, char **argv)
     if (argc == 2)
     {
         std::vector<config_file> block_server = pars_confile(argv[1]);// just i pars the config file
-        //print_block_server(block_server);// just a function to print the content to config file
+        //print_block_server(block_server);
         unsigned long i = 0;
         std::vector<int> server;
         size_t block_size = (block_server).size();
         if ((block_server).size() == 1)
             block_size = 2;
         while (i < block_size - 1)//just a create a socket for every block in config file
-        {//block_server[i].server.c_str()
+        {
             server.push_back(create_socket(block_server[i].server.c_str(), block_server[i].port.c_str()));
             i++;
         }
@@ -109,7 +111,7 @@ int main(int argc, char **argv)
             }
             //client sending data
             struct client_info *client = clients;
-            while(client)
+            while (client)
             {
                 struct client_info *next = client->next;
                 client_send_recv(client, reads, block_server);

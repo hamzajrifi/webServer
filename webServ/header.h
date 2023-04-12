@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <vector>
+#include <map>
+#include <iterator>
 
 #define MAX_REQUEST_SIZE 2047
 
@@ -27,6 +29,7 @@ struct config_file
     std::string index;
     std::string error_log;
     std::string error_pages;
+    std::map <std::string, std::string> error_page_kv;
     std::string client_max_body_size;
     std::string allow_method;
     std::vector<location_struct> list_of_location;
@@ -46,8 +49,11 @@ struct client_request
 struct client_info
 {
     int socket;
+    int indice_header;
+    int indice_end_body;
     char request[MAX_REQUEST_SIZE + 1];
     int received;
+    std::string data;
     struct client_request *request_data_struct;
     struct client_info *next;
 };
