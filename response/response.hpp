@@ -11,7 +11,7 @@
 struct client_info;
 struct config_file;
 
-class  responceClient{
+class  responseClient{
     
     public:
     client_info *client;
@@ -37,15 +37,15 @@ class  responceClient{
     /// file 
     std::fstream	file_RW;
     std::stringstream buff;
-    responceClient(std::vector<config_file> &blockServer);
+    responseClient(std::vector<config_file> &blockServer);
     int         checkUri(std::string);
     static int  getMethode(std::string methode);
     static int  postMethode(std::string methode);
     static int  deleteMethode(std::string methode);
-    int         ft_response(responceClient *res_client);
+    int         ft_response();
     int         noLocation();
     int         send_data();
-    void        send_404();
+    int         send_error_status(int nbStatus);
 };
 
 const char *get_content_type(const char* path) ;

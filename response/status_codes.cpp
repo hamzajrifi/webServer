@@ -1,16 +1,15 @@
 #include "response.hpp"
 
-void        responceClient::send_404()
+int        responseClient::send_error_status(int nbStatus)
 {
-    nbrstatus = 400;
         content_type = get_content_type(".html");
-        // content_type = get_content_type(block_server[nBlock].error_pages[400]);
+        // content_type = get_content_type(block_server[nBlock].error_pages[404]);
         contenet_lenght = 0;
-        // file_RW.open(block_server[nBlock].error_pages[400], std::ios::in);
+        // file_RW.open(block_server[nBlock].error_pages[404], std::ios::in);
         file_RW.open("../index.html", std::ios::in);
         if(!file_RW)
         {
-            buff << "HTTP/1.1 " << statusCodes[nbrstatus] \
+            buff << "HTTP/1.1 " << statusCodes[nbStatus] \
                     << "\r\nContent-Length: " << contenet_lenght \
                     << "\r\nContent-Type: "  << content_type \
                     << "\r\n\r\n";
@@ -18,11 +17,12 @@ void        responceClient::send_404()
         }
         else
         {
+            ///get conetent lenght file
             file_RW.seekg(0, std::ios::end);
             contenet_lenght = file_RW.tellg();
             file_RW.seekg(0,std::ios::beg);
 
-            buff << "HTTP/1.1 " << statusCodes[nbrstatus] \
+            buff << "HTTP/1.1 " << statusCodes[nbStatus] \
                         << "\r\nContent-Length: " << contenet_lenght \
                         << "\r\nContent-Type: "  << content_type \
                         << "\r\n\r\n";
@@ -39,4 +39,5 @@ void        responceClient::send_404()
                 }
             }
         }
+        return 0;
 }
