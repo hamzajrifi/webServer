@@ -12,6 +12,7 @@
 
 #include "../response/response.hpp"
 class responseClient;
+class 
 
 #define MAX_REQUEST_SIZE 9047
 struct location_struct
