@@ -1,6 +1,6 @@
 name = webserver
 
-C_FLAGS = -std=c++98 -Wall -Wextra -Werror  -fsanitize=address
+C_FLAGS = -std=c++98 -Wall -Wextra -Werror  # -fsanitize=address
 
 all : ${name}
 
