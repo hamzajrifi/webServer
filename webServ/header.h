@@ -13,7 +13,7 @@
 #include "../response/response.hpp"
 class responseClient;
 
-#define MAX_REQUEST_SIZE 2047
+#define MAX_REQUEST_SIZE 9047
 struct location_struct
 {
     std::string path;
@@ -58,6 +58,7 @@ struct client_info
     int indice_end_body;
     char request[MAX_REQUEST_SIZE + 1];
     int received;
+    Flag_respose flagRespose;
     std::string data;
     struct client_request *request_data_struct;
     struct client_info *next;
