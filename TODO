@@ -1,0 +1,22 @@
+DNS
+
+== check methode
+if GET ->
+        check request line ->
+                            - "type" "path" "protocol version" // example GET /index.html HTTP/1.1
+                                - parse path // check if " ':' || '/' || '#'  
+
+///////////////////////////////////////
+Encoding : chuncked // the response body will be sent in separate chunks.
+
+If a file's media type is unknown, then our server should use "application/octet-stream"
+
+read and send data from multiple client 
+
+check method if existe uppercase and lowercase
+
+send data getmethode function and send_data() 
+
+protecte all map initialition
+
+code status in get_methode()

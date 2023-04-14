@@ -1,43 +1,37 @@
 #include "response.hpp"
 
-int        responseClient::send_error_status(int nbStatus)
+int        responseClient::send_error_status(std::string nbStatus)
 {
-        content_type = get_content_type(".html");
-        // content_type = get_content_type(block_server[nBlock].error_pages[404]);
-        contenet_lenght = 0;
-        // file_RW.open(block_server[nBlock].error_pages[404], std::ios::in);
-        file_RW.open("../index.html", std::ios::in);
-        if(!file_RW)
+        content_type = get_content_type(block_server[nBlock].error_page_kv[nbStatus].c_str());
+        client->flagRespose->file_RW.open(root + block_server[nBlock].error_page_kv[nbStatus], std::ios::in);
+        std::cout << "check ---*-*-*- " << block_server[nBlock].error_page_kv[nbStatus] << std::endl;
+        if(!client->flagRespose->file_RW || block_server[nBlock].error_page_kv[nbStatus].empty())
         {
+            std::cout  << "file  doesn't opend: "  << std::endl;
+            if (client->flagRespose->file_RW)
+                client->flagRespose->file_RW.close();
             buff << "HTTP/1.1 " << statusCodes[nbStatus] \
-                    << "\r\nContent-Length: " << contenet_lenght \
+                    << "\r\nContent-Length: " << "0" \
                     << "\r\nContent-Type: "  << content_type \
                     << "\r\n\r\n";
             write(client->socket, &buff.str()[0], buff.str().length());
         }
         else
-        {
+        { 
+            std::cout  << "file opend: "  << "status code numbre :" << nbStatus << std::endl;
             ///get conetent lenght file
-            file_RW.seekg(0, std::ios::end);
-            contenet_lenght = file_RW.tellg();
-            file_RW.seekg(0,std::ios::beg);
-
+            client->flagRespose->file_RW.seekg(0, std::ios::end);
+            client->flagRespose->content_lenght = client->flagRespose->file_RW.tellg();
+            client->flagRespose->file_RW.seekg(0,std::ios::beg);
             buff << "HTTP/1.1 " << statusCodes[nbStatus] \
-                        << "\r\nContent-Length: " << contenet_lenght \
+                        << "\r\nContent-Length: " << client->flagRespose->content_lenght \
                         << "\r\nContent-Type: "  << content_type \
                         << "\r\n\r\n";
 
             write(client->socket, &buff.str()[0], buff.str().length());
-            while (1)
-            {
-                file_RW.read(res_body, BSIZE);
-                send_data();
-                if (file_RW.eof())
-                {
-                    file_RW.close();
-                    break;
-                }
-            }
+            // send_data();
         }
-        return 0;
+        std::cout << "here status code file : " << std::endl;
+        nbrstatus = atoi(nbStatus.c_str());
+        return nbrstatus;
 }
