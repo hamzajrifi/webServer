@@ -45,31 +45,49 @@ void drop_client(struct client_info *client)
     exit(1);
 }
 
-fd_set wait_on_clients(std::vector<int> server_socket)
+fd_set wait_on_clients(std::vector<int> server_socket, ft_fdSet& dataSelect)
 {
-    fd_set reads;
-    FD_ZERO(&reads);
+    
+    FD_ZERO(&dataSelect.reads);
     unsigned long i = 0;
     while (i < server_socket.size())
     {
-        FD_SET(server_socket[i], &reads);
+        FD_SET(server_socket[i], &dataSelect.reads);
         i++;
     }
     int max_socket = server_socket[i - 1];
     struct client_info *ci = clients;
     while (ci)
     {
-        FD_SET(ci->socket, &reads);
+        FD_SET(ci->socket, &dataSelect.reads);
         if (ci->socket > max_socket)
             max_socket = ci->socket;
         ci = ci->next;
     }
-    if (select(max_socket + 1, &reads, 0, 0, 0) < 0)
+    //------------------------add write for mr jrifi
+
+    FD_ZERO(&dataSelect.write);
+    i = 0;
+    while (i < server_socket.size())
+    {
+        FD_SET(server_socket[i], &dataSelect.write);
+        i++;
+    }
+   ci = clients;
+    while (ci)
+    {
+        FD_SET(ci->socket, &dataSelect.write);
+        if (ci->socket > max_socket)
+            max_socket = ci->socket;
+        ci = ci->next;
+    }
+    //---------------------
+    if (select(max_socket + 1, &dataSelect.reads, &dataSelect.write, 0, 0) < 0)
     {
         std::cout << "select() failed." << errno << std::endl;
         exit (1);
     }
-    return reads;
+    return dataSelect.reads;
 }
 
 int main(int argc, char **argv)
@@ -91,13 +109,17 @@ int main(int argc, char **argv)
         while (1)
         {
             fd_set reads;
-            reads = wait_on_clients(server);
+            ft_fdSet dataSelect;
+            reads = wait_on_clients(server, dataSelect);
             i = 0;
             while (i < block_size - 1)//just a chkeck for new connection for every lisenner
             {
                 if (FD_ISSET(server[i], &reads))//new connection has been detected
                 {
                     struct client_info *client = get_client(-1);
+                    client->flagRespose = new Flag_respose;
+                    client->flagRespose->isReading = false;
+                    client->flagRespose->lenRead = 0;
                     client->socket = accept(server[i], nullptr, nullptr);
 
                     if (!(client->socket >= 0))
@@ -114,7 +136,7 @@ int main(int argc, char **argv)
             while (client)
             {
                 struct client_info *next = client->next;
-                client_send_recv(client, reads, block_server);
+                client_send_recv(client, dataSelect, block_server);
                 client = next;
             }
         }
