@@ -20,6 +20,7 @@ const char *get_content_type(const char* path)
         if (strcmp(last_dot, ".pdf") == 0) return "application/pdf";
         if (strcmp(last_dot, ".svg") == 0) return "image/svg+xml";
         if (strcmp(last_dot, ".txt") == 0) return "text/plain";
+        if (strcmp(last_dot, ".mp4") == 0) return "video/mp4";
     }
 
     return "application/octet-stream";
@@ -30,23 +31,23 @@ int responseClient::checkUri(std::string _uri)
 {
     struct stat info;
 
-    std::cout << "********** =>>> path = [" << _uri << "] <<<= **********\n" << std::endl;
+    // std::cout << "********** =>>> path = [" << _uri << "] <<<= **********\n" << std::endl;
     if (stat(_uri.c_str(), &info) != 0)
     {
-        std::cout << "path not valid" << std::endl;   
+        // std::cout << "path not valid" << std::endl;   
        return send_error_status("404");
     }
     else
     {
-        std::cout << "path valid !" << std::endl;
+        // std::cout << "path valid !" << std::endl;
         client->flagRespose->file_RW.open(_uri);
         if (!client->flagRespose->file_RW)
         {
-            std::cout << " _uri not file !  " <<  _uri  << std::endl;
+            // std::cout << " _uri not file !  " <<  _uri  << std::endl;
             client->flagRespose->file_RW.open(_uri + index);
             if (!client->flagRespose->file_RW)
             {
-                std::cout << " file not valid !  " <<  _uri + index << std::endl;
+                // std::cout << " file not valid !  " <<  _uri + index << std::endl;
                 return send_error_status("404");
             }
             uri = _uri + index;
@@ -63,7 +64,7 @@ int responseClient::getMethode(responseClient& cl)
     cl.client->flagRespose->file_RW.seekg(0, std::ios::end);
     cl.client->flagRespose->content_lenght = cl.client->flagRespose->file_RW.tellg();
     cl.client->flagRespose->file_RW.seekg(0,std::ios::beg);
-    std::cout << "data " << cl.client->flagRespose->content_lenght << std::endl;
+    // std::cout << "data " << cl.client->flagRespose->content_lenght << std::endl;
     cl.buff << "HTTP/1.1 " << cl.statusCodes["200"] \
                 << "\r\nContent-Type: "  << cl.content_type\
                 << "\r\nContent-Length: " << cl.client->flagRespose->content_lenght \
@@ -71,7 +72,7 @@ int responseClient::getMethode(responseClient& cl)
                 << "\r\n";
 
             write(cl.client->socket, cl.buff.str().c_str(), cl.buff.str().length());
-    std::cout << "*-*-*-*-*-*-*-* GET methode *-*-*-*-*-*-*-*" << std::endl;
+    // std::cout << "*-*-*-*-*-*-*-* GET methode *-*-*-*-*-*-*-*" << std::endl;
     // cl.send_data();
     return 0;
 }
@@ -178,7 +179,7 @@ int responseClient::root_directory_if_existe()
     }
     else if (root[0] != '/')    
         root = "/" + root;
-         std::cout << "here "<< client->request_data_struct->path << "\n\n "<< std::endl;
+        //  std::cout << "here "<< client->request_data_struct->path << "\n\n "<< std::endl;
     nbrstatus = checkUri(root + client->request_data_struct->path.substr(1, client->request_data_struct->path.length()));
     return nbrstatus;
 }
@@ -230,10 +231,10 @@ int responseClient::check_if_location_matched()
 
 int responseClient::ft_response()
 {
-    std::cout << "*-*-*-*-*-*-*-*-*--*-*-*-*-*-*----------*-*-* start respose *-*-*-*-*-*-*-*-*--*-*-*-*-*-*----------*-*-* " << std::endl;
+    // std::cout << "*-*-*-*-*-*-*-*-*--*-*-*-*-*-*----------*-*-* start respose *-*-*-*-*-*-*-*-*--*-*-*-*-*-*----------*-*-* " << std::endl;
     if (client->flagRespose->isReading)
     {
-        std::cout << "sending data" << std::endl;
+        // std::cout << "sending data" << std::endl;
         send_data();
     }
     else
@@ -252,6 +253,8 @@ int responseClient::ft_response()
     
         for(size_t nServer=0; nServer < block_server.size() - 1; nServer++)
         {
+            
+        
             if ((!block_server[nServer].server_name.compare(host_serv) || !block_server[nServer].server.compare(host_serv)) \
                 && !block_server[nServer].port.compare(port_serv))
             {
@@ -260,7 +263,7 @@ int responseClient::ft_response()
                 nBlock = nServer;
                 //check if methode allowed
                 std::string MetAllowd("GET POST DELETE");
-
+            
                 if ((block_server[nBlock].allow_method.length() > 0 && block_server[nBlock].allow_method.find(client->request_data_struct->method) == std::string::npos)
                 || MetAllowd.find(client->request_data_struct->method) == std::string::npos)
                 {
@@ -273,23 +276,24 @@ int responseClient::ft_response()
                 else
                     check_if_location_matched();
                 /// get current root Directory 
-                if (nbrstatus || root_directory_if_existe())
+                if (root_directory_if_existe())
                     return nbrstatus;
 
                 /// calling Methode needed
                 methodeFunction[client->request_data_struct->method](*this);
                 return nbrstatus;
             }
-            else
-            {
-                 ///////////////// for testing ......
+            // else
+            // {
+                 /////////////// for testing ......
 
-                char test_response[] = "HTTP/1.1 200 OK\r\nContent-Length: 20\r\n\r\nOK hamid khdamaaaa!!";
-                write (client->socket, (char *)test_response, sizeof(test_response));
-                client->flagRespose->isReading = false;
-                /////////////////
-                return 0;
-            }
+                // char test_response[] = "HTTP/1.1 200 OK\r\nContent-Length: 20\r\n\r\nOK hamid khdamaaaa!!";
+                // write (client->socket, (char *)test_response, sizeof(test_response));
+                // client->flagRespose->isReading = false;
+                ///////////////
+                // return 0;
+            // }
+
         }
     }
     
