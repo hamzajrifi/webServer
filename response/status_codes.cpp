@@ -13,12 +13,24 @@ int     responseClient::get_default_error_page(std::string nbStatus)
 	return 1;
 }
 
+int	responseClient::error_301()
+{
+	std::cout << "jsut inside 301" << std::endl;
+	buff 	<< "HTTP/1.1 301 Moved Permanently \r\nLocation: " \
+			<< index;
+	write(client->socket, &buff.str()[0], buff.str().length());
+	client->flagResponse->isReading = false;
+	drop_client(client);
+	return 301;
+}
+
 int     responseClient::send_error_status(std::string nbStatus)
 {
 	//  error Not Implemented
-	if (!nbStatus.compare("501"))
-		return (get_default_error_page("501"));
-
+	if (!nbStatus.compare("501") || !nbStatus.compare("413"))
+		return (get_default_error_page(nbStatus));
+	if(!nbStatus.compare("301"))
+		return error_301();
 	client->flagResponse->file_RW.open(root + block_server[nBlock].error_page_kv[nbStatus], std::ios::in);
 	if (!client->flagResponse->file_RW || block_server[nBlock].error_page_kv[nbStatus].empty())
 		get_default_error_page(nbStatus);

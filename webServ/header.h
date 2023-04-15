@@ -37,7 +37,7 @@ struct config_file
     std::string error_pages;
     std::map <std::string, std::string> error_page_kv;
     std::string client_max_body_size;
-    int max_number;
+    size_t  max_number;
     std::string allow_method;
     std::vector<location_struct> list_of_location;
 };

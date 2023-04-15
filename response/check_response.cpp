@@ -56,20 +56,20 @@ int responseClient::checkUri(std::string _uri)
 	// std::cout << "********** =>>> path = [" << _uri << "] <<<= **********\n" << std::endl;
 	if (stat(_uri.c_str(), &info) != 0)
 	{
-		// std::cout << "path not valid" << std::endl;   
+		std::cout << "path not valid" << std::endl;   
 	   return send_error_status("404");
 	}
 	else
 	{
-		// std::cout << "path valid !" << std::endl;
+		std::cout << "path valid !" << std::endl;
 		client->flagResponse->file_RW.open(_uri);
 		if (!client->flagResponse->file_RW)
 		{
-			// std::cout << " _uri not file !  " <<  _uri  << std::endl;
+			std::cout << " _uri not file !  " <<  _uri  << std::endl;
 			client->flagResponse->file_RW.open(_uri + index);
 			if (!client->flagResponse->file_RW)
 			{
-				// std::cout << " file not valid !  " <<  _uri + index << std::endl;
+				std::cout << " file not valid !  " <<  _uri + index << std::endl;
 				return send_error_status("404");
 			}
 			uri = _uri + index;
@@ -246,7 +246,7 @@ int responseClient::root_directory_if_existe()
 	return nbrstatus;
 }
 
-int     responseClient::noLocation()
+int	responseClient::noLocation()
 {
 	
 	std::cout << "----------- No location ---------" << std::endl;
@@ -277,7 +277,13 @@ int responseClient::check_if_location_matched()
 			std::cout << "------------------------- location is matched -------------------------\n" << std::endl;
 			if (!i++ || (block_server[nBlock].list_of_location.size() > 1 && nLocation > 0 
 			&& lenPathLocation <= block_server[nBlock].list_of_location[nLocation].path.length()))
-			{ 
+			{
+				if (!block_server[nBlock].list_of_location[nLocation].returno.empty())
+				{
+					index = block_server[nBlock].list_of_location[nLocation].returno;
+					return send_error_status("301");
+				}
+					// std::cout << "root " << block_server[nBlock].list_of_location[nLocation].returno << std::endl;
 				if (block_server[nBlock].list_of_location[nLocation].index[0] == '/')
 					index = block_server[nBlock].list_of_location[nLocation].index.substr(1);
 				else
@@ -312,6 +318,9 @@ int responseClient::ft_response()
 	
 		for(size_t nServer=0; nServer < block_server.size() - 1; nServer++)
 		{
+			std::cout << "size body : " << block_server[nServer].max_number << std::endl;
+			if (!client->request_data_struct->method.find("POST") && client->request_data_struct->body.size() > block_server[nServer].max_number)
+				return send_error_status("413");
 			if ((!block_server[nServer].server_name.compare(host_serv) || !block_server[nServer].server.compare(host_serv)) \
 				&& !block_server[nServer].port.compare(port_serv))
 			{
@@ -319,7 +328,6 @@ int responseClient::ft_response()
 				index = block_server[nServer].index;
 				nBlock = nServer;
 				//check if methode allowed
-			
 				if (block_server[nBlock].allow_method.find(client->request_data_struct->method) != std::string::npos)
 				{
 					std::cout << "Method Not Allowed" << std::endl;
@@ -328,12 +336,11 @@ int responseClient::ft_response()
 				//#### matching location
 				if (block_server[nServer].list_of_location.size() == 0)
 					noLocation();
-				else
-					check_if_location_matched();
+				else if (check_if_location_matched())
+					return nbrstatus;
 				/// get current root Directory 
 				if (root_directory_if_existe())
 					return nbrstatus;
-
 				/// calling Methode needed
 				methodeFunction[client->request_data_struct->method](*this);
 				return nbrstatus;
@@ -348,9 +355,7 @@ int responseClient::ft_response()
 				///////////////
 				// return 0;
 			// }
-
 		}
-	}
-	
+	}	
 	return 0;
 }

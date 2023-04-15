@@ -66,6 +66,12 @@ void pars_request(client_info *client)
     {
         client->request_data_struct->method = strtok(client->request, " ");
         client->request_data_struct->path = strtok(NULL, " ");
+        if (client->request_data_struct->path.size() > 2024)
+        {
+            client->request_data_struct->nbrStatus = "414";
+            return;
+        }
+
         for(size_t j = 0; j < temp_split_data.size(); j++)
         {
             std::cout << "--# " << temp_split_data[j] << std::endl;
