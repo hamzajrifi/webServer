@@ -1,23 +1,11 @@
 DNS
 
-== check methode
-if GET ->
-        check request line ->
-                            - "type" "path" "protocol version" // example GET /index.html HTTP/1.1
-                                - parse path // check if " ':' || '/' || '#'  
-
 ///////////////////////////////////////
-Encoding : chuncked // the response body will be sent in separate chunks.
 
-If a file's media type is unknown, then our server should use "application/octet-stream"
 
-read and send data from multiple client 
+check method if existe uppercase and lowercase // check if get and post and delete is allowed
 
-check method if existe uppercase and lowercase
-
-send data getmethode function and send_data() 
-
-protecte all map initialition
+protecte all map initialition ---> add exceptions
 
 code status in get_methode()
 
@@ -28,6 +16,3 @@ int use = 1;
 
 /////
 check protocol HTTP"S" tl9naa a si hamid
-
-/// check 301 rederction 
-/// check 403 forbidden if auto inedx off

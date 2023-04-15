@@ -16,6 +16,7 @@ struct  Flag_respose{
     std::fstream	file_RW;
     size_t      lenRead;
     size_t      content_length;
+    bool        ifautoIndex;
 }; 
 
 class  responseClient{

@@ -53,7 +53,7 @@ int responseClient::checkUri(std::string _uri)
 {
 	struct stat info;
 
-	// std::cout << "********** =>>> path = [" << _uri << "] <<<= **********\n" << std::endl;
+	std::cout << "********** =>>> path = [" << _uri << "] <<<= **********\n" << std::endl;
 	if (stat(_uri.c_str(), &info) != 0)
 	{
 		std::cout << "path not valid" << std::endl;   
@@ -66,6 +66,8 @@ int responseClient::checkUri(std::string _uri)
 		if (!client->flagResponse->file_RW)
 		{
 			std::cout << " _uri not file !  " <<  _uri  << std::endl;
+			if (!client->flagResponse->ifautoIndex)
+				return send_error_status("403");
 			client->flagResponse->file_RW.open(_uri + index);
 			if (!client->flagResponse->file_RW)
 			{
@@ -269,7 +271,8 @@ int responseClient::check_if_location_matched()
 	std::string rootLocation;
 	for(size_t nLocation = 0; nLocation < block_server[nBlock].list_of_location.size(); nLocation++)
 	{
-		
+		std::cout << "nblock =  " << nLocation << " nlocation " << block_server[nBlock].list_of_location[nLocation].path \
+		<< "path " <<  client->request_data_struct->path << std::endl;
 		if (client->request_data_struct->path.find(block_server[nBlock].list_of_location[nLocation].path) != std::string::npos \
 			&& (client->request_data_struct->path[block_server[nBlock].list_of_location[nLocation].path.length()] == '\0' || \
 			client->request_data_struct->path[block_server[nBlock].list_of_location[nLocation].path.length()] == '/'))
@@ -278,6 +281,8 @@ int responseClient::check_if_location_matched()
 			if (!i++ || (block_server[nBlock].list_of_location.size() > 1 && nLocation > 0 
 			&& lenPathLocation <= block_server[nBlock].list_of_location[nLocation].path.length()))
 			{
+				if (!block_server[nBlock].list_of_location[nLocation].autoindex.find("off"))
+					client->flagResponse->ifautoIndex = false;
 				if (!block_server[nBlock].list_of_location[nLocation].returno.empty())
 				{
 					index = block_server[nBlock].list_of_location[nLocation].returno;
