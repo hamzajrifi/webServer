@@ -37,6 +37,7 @@ struct config_file
     std::string error_pages;
     std::map <std::string, std::string> error_page_kv;
     std::string client_max_body_size;
+    int max_number;
     std::string allow_method;
     std::vector<location_struct> list_of_location;
 };
@@ -54,6 +55,7 @@ struct client_request
     std::string content_Length;
     std::string transfer_Encoding;
     std::string content_Type;
+    int         nbrStatus;
 };
 
 struct client_info
@@ -63,7 +65,7 @@ struct client_info
     int indice_end_body;
     char request[MAX_REQUEST_SIZE + 1];
     int received;
-    struct Flag_respose *flagRespose;
+    struct Flag_respose *flagResponse;
     std::string data;
     struct client_request *request_data_struct;
     struct client_info *next;

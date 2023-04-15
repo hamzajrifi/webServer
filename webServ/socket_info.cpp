@@ -27,7 +27,7 @@ int create_socket(const char* host, const char* port)
     }
     freeaddrinfo(bind_address);
     std::cout << "listeing..." << std::endl;
-    if (listen(socket_listen, 10) < 0)
+    if (listen(socket_listen, 200) < 0)
     {
         std::cout << "listen() failed." << errno << std::endl;
         exit(1);

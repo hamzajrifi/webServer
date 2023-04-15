@@ -2,6 +2,7 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <cmath>
 
 void print_block_server(std::vector<config_file> block_server)
 {
@@ -136,6 +137,26 @@ void parce_errorPage(std::vector<config_file> *block_server, size_t i)
     }
 }
 
+void check_bady_size(std::vector<config_file> *block_server, size_t i)
+{
+    if ((*block_server)[i].client_max_body_size.empty() || !std::isdigit((*block_server)[i].client_max_body_size[0]))
+    {
+        std::cout << "just error in max bady config file" << std::endl;
+        exit(1);
+    }
+    
+    int max_number = stoi((*block_server)[i].client_max_body_size);
+    if ((*block_server)[i].client_max_body_size[(*block_server)[i].client_max_body_size.size() - 1]  == 'm')
+        (*block_server)[i].max_number = max_number * pow(10, 6);
+    else if ((*block_server)[i].client_max_body_size[(*block_server)[i].client_max_body_size.size() - 1]  == 'k')
+        (*block_server)[i].max_number = max_number * pow(10, 3);
+    else
+    {
+        std::cout << "we seport just m and k" << std::endl;
+        exit(1);
+    }
+}
+
 void block_to_variable(std::vector<config_file> *block_server)
 {
     size_t j = 0;
@@ -181,18 +202,14 @@ void block_to_variable(std::vector<config_file> *block_server)
                 {
                     (*block_server)[i].error_pages = temp_split_data[j].substr(ifind + 1);
                     parce_errorPage(block_server, i);
-                    //std::cout << "size:" << (*block_server)[i].error_page_kv.size() << std::endl;
-                    //std::map<std::string, std::string>::iterator it = (*block_server)[i].error_page_kv.begin();
-                    //while (it != (*block_server)[i].error_page_kv.end())
-                    //{
-                    //    std::cout << "content :" << it->first << "|" << it->second << std::endl;
-                    //    ++it;
-                    //}
                 }
                 else if (temp_split_data[j].compare(0, 10, "error_log ") == 0)
                     (*block_server)[i].error_log = temp_split_data[j].substr(ifind + 1);
                 else if (temp_split_data[j].compare(0, 21, "client_max_body_size ") == 0)
+                {
                     (*block_server)[i].client_max_body_size = temp_split_data[j].substr(ifind + 1);
+                    check_bady_size(block_server, i);
+                }
                 else if (temp_split_data[j].compare(0, 6, "index ") == 0)
                     (*block_server)[i].index = temp_split_data[j].substr(ifind + 1);
                 else if (temp_split_data[j].compare(0, 9, "location ") == 0)

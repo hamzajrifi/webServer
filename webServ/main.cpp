@@ -67,13 +67,7 @@ fd_set wait_on_clients(std::vector<int> server_socket, ft_fdSet& dataSelect)
     //------------------------add write for mr jrifi
 
     FD_ZERO(&dataSelect.write);
-    i = 0;
-    while (i < server_socket.size())
-    {
-        FD_SET(server_socket[i], &dataSelect.write);
-        i++;
-    }
-   ci = clients;
+    ci = clients;
     while (ci)
     {
         FD_SET(ci->socket, &dataSelect.write);
@@ -117,9 +111,10 @@ int main(int argc, char **argv)
                 if (FD_ISSET(server[i], &reads))//new connection has been detected
                 {
                     struct client_info *client = get_client(-1);
-                    client->flagRespose = new Flag_respose;
-                    client->flagRespose->isReading = false;
-                    client->flagRespose->lenRead = 0;
+                    client->flagResponse = new Flag_respose;
+                    client->flagResponse->isReading = false;
+                    client->flagResponse->lenRead = 0;
+                    client->request_data_struct->nbrStatus = 0;
                     client->socket = accept(server[i], nullptr, nullptr);
 
                     if (!(client->socket >= 0))

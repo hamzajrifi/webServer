@@ -12,7 +12,7 @@ void client_send_recv(client_info *client, ft_fdSet& dataSelect, std::vector<con
             std::cout << "i don't know the reason, but the client is disconnect. "<< std::endl;
             drop_client(client);
         }
-        else if (!client->flagRespose->isReading)
+        else if (!client->flagResponse->isReading)
         {
             client->data.append(client->request, client->received);
             if (client->indice_header)//just i parse the header of the request.
@@ -32,9 +32,13 @@ void client_send_recv(client_info *client, ft_fdSet& dataSelect, std::vector<con
                     if (ifind < client->request_data_struct->body.size())
                         client->indice_end_body = 1;
                 }
-                else//here just for content-length
+                else if (!client->request_data_struct->content_Length.empty())//here just for content-length
+                {   
                     if (client->request_data_struct->body.size() == (size_t)atoi(client->request_data_struct->content_Length.c_str()))
                         client->indice_end_body = 1;
+                }
+                else
+                    client->request_data_struct->nbrStatus = client->request_data_struct->transfer_Encoding.empty() ? 501 : 400;
                 std::cout << "here here inside: "<< client->socket << std::endl;
                 std::cout << client->data.size() << "=" << client->request_data_struct->content_Length << "=" << client->request_data_struct->body.size() << std::endl;
             }
@@ -45,7 +49,7 @@ void client_send_recv(client_info *client, ft_fdSet& dataSelect, std::vector<con
             }
         }
     }
-    else if (client->flagRespose->isReading && FD_ISSET(client->socket, &dataSelect.write))
+    else if (client->flagResponse->isReading && FD_ISSET(client->socket, &dataSelect.write))
     {
         res_client.client = client;
 		res_client.ft_response();
