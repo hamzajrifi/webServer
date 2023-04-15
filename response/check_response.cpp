@@ -149,10 +149,9 @@ int	responseClient::check_method()
 {
 	//check if methode allowed
 	std::string MetAllowd("GET POST DELETE");
-	
 	if (client->request_data_struct->method.empty() || MetAllowd.find(client->request_data_struct->method) == std::string::npos)
 	{
-		client->request_data_struct->nbrStatus = "501";	
+		client->request_data_struct->nbrStatus = "501";
 		return 501;
 	}
 	return 0;
@@ -242,7 +241,7 @@ int responseClient::root_directory_if_existe()
 	}
 	else if (root[0] != '/')    
 		root = "/" + root;
-		 std::cout << "here "<< client->request_data_struct->path << "\n\n "<< std::endl;
+		//  std::cout << "here "<< client->request_data_struct->path << "\n\n "<< std::endl;
 	nbrstatus = checkUri(root + client->request_data_struct->path.substr(1, client->request_data_struct->path.length()));
 	return nbrstatus;
 }
@@ -296,8 +295,7 @@ int responseClient::check_if_location_matched()
 int responseClient::ft_response()
 {
 	///check if error in request
-	std::cout << "test " << std::endl;
-	if (!client->request_data_struct->nbrStatus.empty() && check_method())
+	if (!client->request_data_struct->nbrStatus.empty() || check_method())
 		return (send_error_status(client->request_data_struct->nbrStatus.c_str()));
 	///check if client is conected 
 	if (client->flagResponse->isReading)
@@ -324,7 +322,7 @@ int responseClient::ft_response()
 			
 				if (block_server[nBlock].allow_method.find(client->request_data_struct->method) != std::string::npos)
 				{
-					std::cout << "method Not Allowed" << std::endl;
+					std::cout << "Method Not Allowed" << std::endl;
 					return send_error_status("405");
 				}
 				//#### matching location

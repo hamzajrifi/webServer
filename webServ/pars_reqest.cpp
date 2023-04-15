@@ -2,7 +2,6 @@
 
 void pars_request_header(client_info *client)
 {
-        std::cout <<  "path" << client->request << std::endl;
     std::vector<std::string> temp_split_data;
     client->request_data_struct = (struct client_request*) calloc(1, sizeof(struct client_request));
     // just i split request block with "\r\n\r\n" to get every line

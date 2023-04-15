@@ -55,6 +55,7 @@ class  responseClient{
     int         check_if_location_matched();
     int         send_data();
     int         send_error_status(std::string nbStatus);
+    int         get_default_error_page(std::string nbStatus);
     int         check_method();
 };
 
