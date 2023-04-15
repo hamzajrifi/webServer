@@ -2,19 +2,19 @@
 
 int responseClient::send_data()
 {
-    // std::cout << "fd = " << client->socket << " content lenght : " << client->flagRespose->content_lenght << std::endl;
+    // std::cout << "fd = " << client->socket << " content lenght : " << client->flagResponse->content_length << std::endl;
 
-        client->flagRespose->file_RW.read(res_body, BSIZE);
+        client->flagResponse->file_RW.read(res_body, BSIZE);
         // std::cout << "body data = " << client->socket << " [][] " << res_body << std::endl;
 
-        if (write(client->socket, res_body, client->flagRespose->file_RW.gcount()) < 0)
+        if (write(client->socket, res_body, client->flagResponse->file_RW.gcount()) < 0)
             std::cout << "write error" << std::endl;
-        client->flagRespose->lenRead += client->flagRespose->file_RW.gcount();
-        // if (client->flagRespose->file_RW.eof())
-        if ((size_t)client->flagRespose->content_lenght <= client->flagRespose->lenRead || client->flagRespose->file_RW.gcount() == 0)
+        client->flagResponse->lenRead += client->flagResponse->file_RW.gcount();
+        // if (client->flagResponse->file_RW.eof())
+        if ((size_t)client->flagResponse->content_length <= client->flagResponse->lenRead || client->flagResponse->file_RW.gcount() == 0)
         {
-            client->flagRespose->isReading = false;
-            client->flagRespose->file_RW.close();
+            client->flagResponse->isReading = false;
+            client->flagResponse->file_RW.close();
             // std::cout << "file close sending.........." << std::endl;
             drop_client(client);
         }

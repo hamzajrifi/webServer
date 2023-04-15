@@ -55,7 +55,7 @@ struct client_request
     std::string content_Length;
     std::string transfer_Encoding;
     std::string content_Type;
-    int         nbrStatus;
+    std::string nbrStatus;
 };
 
 struct client_info

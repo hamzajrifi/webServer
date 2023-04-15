@@ -23,3 +23,9 @@ code status in get_methode()
 
 int use = 1;
     setsockopt(fd_server,SOL_SOCKET,SO_REUSEADDR, &use,sizeof(use));
+
+
+
+/////
+check body max size
+check protocol and

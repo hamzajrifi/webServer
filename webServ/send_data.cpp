@@ -38,7 +38,7 @@ void client_send_recv(client_info *client, ft_fdSet& dataSelect, std::vector<con
                         client->indice_end_body = 1;
                 }
                 else
-                    client->request_data_struct->nbrStatus = client->request_data_struct->transfer_Encoding.empty() ? 501 : 400;
+                    client->request_data_struct->nbrStatus = client->request_data_struct->transfer_Encoding.empty() ? "501" : "400";
                 std::cout << "here here inside: "<< client->socket << std::endl;
                 std::cout << client->data.size() << "=" << client->request_data_struct->content_Length << "=" << client->request_data_struct->body.size() << std::endl;
             }

@@ -7,7 +7,7 @@
 #include <fstream>
 #include <sstream>
 
-#define BSIZE 4024
+#define BSIZE 9024
 struct client_info;
 struct config_file;
 
@@ -15,7 +15,7 @@ struct  Flag_respose{
     bool isReading;
     std::fstream	file_RW;
     size_t      lenRead;
-    size_t      content_lenght;
+    size_t      content_length;
 }; 
 
 class  responseClient{
@@ -46,15 +46,18 @@ class  responseClient{
     responseClient(std::vector<config_file> &blockServer);
     int         checkUri(std::string);
     int         root_directory_if_existe();
-    static int  getMethode(responseClient&);
-    static int  postMethode(responseClient&);
-    static int  deleteMethode(responseClient&);
+    static int  getMethod(responseClient&);
+    static int  postMethod(responseClient&);
+    static int  deleteMethod(responseClient&);
+    static int  nbrDataUpload;
     int         ft_response();
     int         noLocation();
     int         check_if_location_matched();
     int         send_data();
     int         send_error_status(std::string nbStatus);
+    int         check_method();
 };
+
 
 const char *get_content_type(const char* path) ;
 //// utils.cpp
