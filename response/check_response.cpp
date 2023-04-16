@@ -70,6 +70,12 @@ int responseClient::checkUri(std::string _uri)
 				return send_error_status("403");
 			if (!client->request_data_struct->method.find("DELETE"))
 				return send_error_status("409");
+
+			if (!client->flagResponse->isLocation 
+				&& client->request_data_struct->path.length() > 1 
+				&& block_server[nBlock].index[0] != '/')
+					index = "/" + index;
+
 			client->flagResponse->file_RW.open(_uri + index);
 			if (!client->flagResponse->file_RW)
 			{
@@ -269,17 +275,9 @@ int responseClient::root_directory_if_existe()
 
 int	responseClient::noLocation()
 {
-	
 	std::cout << "----------- No location ---------" << std::endl;
-	//check if methode allowed
-	std::string MetAllowd("GET POST DELETE");
-
-	if ((block_server[nBlock].allow_method.length() > 0 && block_server[nBlock].allow_method.find(client->request_data_struct->method) == std::string::npos)
-	|| MetAllowd.find(client->request_data_struct->method) == std::string::npos)
-	{
-		std::cout << "method Not Allowed" << std::endl;
-		return send_error_status("405");
-	}
+	if (block_server[nBlock].index[0] == '/')
+		index = block_server[nBlock].list_of_location[nLocation].index.substr(1);
 	return 0;
 }
 
@@ -343,14 +341,15 @@ int responseClient::ft_response()
 		std::string port_serv = client->request_data_struct->host.substr(sfind + 1, client->request_data_struct->host.length());
 		nbrstatus = 0;
 		/// check Block Server
-	
+		noServerMatched = false;
 		for(size_t nServer=0; nServer < block_server.size() - 1; nServer++)
 		{
 			std::cout << "size body : " << block_server[nServer].max_number << std::endl;
 			if (!client->request_data_struct->method.find("POST") && client->request_data_struct->body.size() > block_server[nServer].max_number)
 				return send_error_status("413");
-			if ((!block_server[nServer].server_name.compare(host_serv) || !block_server[nServer].server.compare(host_serv)) \
-				&& !block_server[nServer].port.compare(port_serv))
+			if (((!block_server[nServer].server_name.compare(host_serv) || !block_server[nServer].server.compare(host_serv)) \
+				&& !block_server[nServer].port.compare(port_serv)) 
+				|| noServerMatched)
 			{
 				root = block_server[nServer].root;
 				index = block_server[nServer].index;
@@ -360,12 +359,17 @@ int responseClient::ft_response()
 					noLocation();
 				else if (check_if_location_matched())
 					return nbrstatus;
-				/// get current root Directory 
+				/// get current root Directory
 				if (root_directory_if_existe())
 					return nbrstatus;
 				/// calling Methode needed
 				methodeFunction[client->request_data_struct->method](*this);
 				return nbrstatus;
+			}
+			else if (nServer == block_server.size() - 2)
+			{
+				noServerMatched = true;
+				std::cout << "no server matched" << std::endl;
 			}
 			// else
 			// {

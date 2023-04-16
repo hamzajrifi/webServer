@@ -43,6 +43,7 @@ class  responseClient{
     std::vector<config_file> &block_server;
     int nBlock;
     size_t nLocation;
+    bool    noServerMatched;
 
     std::map<std::string, int (*)(responseClient&)> methodeFunction;
     std::map<std::string, std::string> statusCodes;
