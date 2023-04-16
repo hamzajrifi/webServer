@@ -52,6 +52,8 @@ const char *get_lastEnd_content_type(const char* type)
 int responseClient::checkUri(std::string _uri)
 {
 	struct stat info;
+
+	std::cout << "********** =>>> path = [" << _uri << "] <<<= **********\n" << std::endl;
 	if (stat(_uri.c_str(), &info) != 0)
 	{
 		std::cout << "path not valid" << std::endl;   
@@ -63,6 +65,7 @@ int responseClient::checkUri(std::string _uri)
 		client->flagResponse->file_RW.open(_uri);
 		if (!client->flagResponse->file_RW)
 		{
+			std::cout << " _uri not file !  " <<  _uri  << std::endl;
 			if (!client->flagResponse->ifautoIndex)
 				return send_error_status("403");
 			if (!client->request_data_struct->method.find("DELETE"))
@@ -365,19 +368,9 @@ int responseClient::ft_response()
 			}
 			else if (nServer == block_server.size() - 2)
 			{
+				nServer = -1;
 				noServerMatched = true;
-				std::cout << "no server matched" << std::endl;
 			}
-			// else
-			// {
-				 /////////////// for testing ......
-
-				// char test_response[] = "HTTP/1.1 200 OK\r\nContent-Length: 20\r\n\r\nOK hamid khdamaaaa!!";
-				// write (client->socket, (char *)test_response, sizeof(test_response));
-				// client->flagResponse->isReading = false;
-				///////////////
-				// return 0;
-			// }
 		}
 	}	
 	return 0;
