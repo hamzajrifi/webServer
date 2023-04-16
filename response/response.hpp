@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <fstream>
 #include <sstream>
+#include <string.h>
 
 #define BSIZE 9024
 struct client_info;
@@ -17,6 +18,8 @@ struct  Flag_respose{
     size_t      lenRead;
     size_t      content_length;
     bool        ifautoIndex;
+    std::string allowedMethod;
+    bool        isLocation;
 }; 
 
 class  responseClient{
@@ -39,6 +42,7 @@ class  responseClient{
     std::string index;
     std::vector<config_file> &block_server;
     int nBlock;
+    size_t nLocation;
 
     std::map<std::string, int (*)(responseClient&)> methodeFunction;
     std::map<std::string, std::string> statusCodes;

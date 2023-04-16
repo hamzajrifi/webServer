@@ -68,6 +68,8 @@ int responseClient::checkUri(std::string _uri)
 			std::cout << " _uri not file !  " <<  _uri  << std::endl;
 			if (!client->flagResponse->ifautoIndex)
 				return send_error_status("403");
+			if (!client->request_data_struct->method.find("DELETE"))
+				return send_error_status("409");
 			client->flagResponse->file_RW.open(_uri + index);
 			if (!client->flagResponse->file_RW)
 			{
@@ -97,13 +99,12 @@ int responseClient::getMethod(responseClient& cl)
 
 			write(cl.client->socket, cl.buff.str().c_str(), cl.buff.str().length());
 	// std::cout << "*-*-*-*-*-*-*-* GET methode *-*-*-*-*-*-*-*" << std::endl;
-	// cl.send_data();
 	return 0;
 }
 
 int responseClient::postMethod(responseClient& cl)
 {
-	std::cout << "POST method" << std::endl;
+	std::cout << "*-*-*-*-*-*-*-* POST method *-*-*-*-*-*-*-*" << std::endl;
 		// std::cout << "data " << cl.client->request_data_struct->body << std::endl;
 	////check if body is empty
 	// if (!cl.client->request_data_struct->content_Type.length())
@@ -155,6 +156,24 @@ int	responseClient::check_method()
 	{
 		client->request_data_struct->nbrStatus = "501";
 		return 501;
+	}
+	else if (client->flagResponse->isLocation
+			&& !block_server[nBlock].list_of_location[nLocation].allow_method.empty())
+	{
+		client->flagResponse->allowedMethod = (block_server[nBlock].list_of_location[nLocation].allow_method.find("POST") == std::string::npos
+		&& block_server[nBlock].list_of_location[nLocation].allow_method.find("post") == std::string::npos) ? " " : "POST";
+
+		client->flagResponse->allowedMethod += (block_server[nBlock].list_of_location[nLocation].allow_method.find("GET") == std::string::npos
+		&& block_server[nBlock].list_of_location[nLocation].allow_method.find("get") == std::string::npos) ? " " : " GET";
+
+		client->flagResponse->allowedMethod += (block_server[nBlock].list_of_location[nLocation].allow_method.find("DELETE") == std::string::npos
+		&& block_server[nBlock].list_of_location[nLocation].allow_method.find("delete") == std::string::npos) ? " " : " DELETE";
+	
+		if (client->flagResponse->allowedMethod.find(client->request_data_struct->method) == std::string::npos)
+		{
+			client->request_data_struct->nbrStatus = "405";
+			return 405;
+		}
 	}
 	return 0;
 }
@@ -243,7 +262,7 @@ int responseClient::root_directory_if_existe()
 	}
 	else if (root[0] != '/')    
 		root = "/" + root;
-		//  std::cout << "here "<< client->request_data_struct->path << "\n\n "<< std::endl;
+		 std::cout << "request path "<< client->request_data_struct->path << "\n "<< std::endl;
 	nbrstatus = checkUri(root + client->request_data_struct->path.substr(1, client->request_data_struct->path.length()));
 	return nbrstatus;
 }
@@ -269,18 +288,22 @@ int responseClient::check_if_location_matched()
 	size_t lenPathLocation = block_server[nBlock].list_of_location[0].path.length();
 	int i = 0;
 	std::string rootLocation;
-	for(size_t nLocation = 0; nLocation < block_server[nBlock].list_of_location.size(); nLocation++)
+	for(nLocation = 0; nLocation < block_server[nBlock].list_of_location.size(); nLocation++)
 	{
-		std::cout << "nblock =  " << nLocation << " nlocation " << block_server[nBlock].list_of_location[nLocation].path \
-		<< "path " <<  client->request_data_struct->path << std::endl;
+		// std::cout << "nblock =  " << nLocation << " nlocation " << block_server[nBlock].list_of_location[nLocation].path \
+		// << "path " <<  client->request_data_struct->path << std::endl;
 		if (client->request_data_struct->path.find(block_server[nBlock].list_of_location[nLocation].path) != std::string::npos \
 			&& (client->request_data_struct->path[block_server[nBlock].list_of_location[nLocation].path.length()] == '\0' || \
 			client->request_data_struct->path[block_server[nBlock].list_of_location[nLocation].path.length()] == '/'))
 		{
 			std::cout << "------------------------- location is matched -------------------------\n" << std::endl;
+			client->flagResponse->isLocation = true;
 			if (!i++ || (block_server[nBlock].list_of_location.size() > 1 && nLocation > 0 
 			&& lenPathLocation <= block_server[nBlock].list_of_location[nLocation].path.length()))
 			{
+				if (!block_server[nBlock].list_of_location[nLocation].allow_method.empty() && check_method())
+					return send_error_status("405");
+				
 				if (!block_server[nBlock].list_of_location[nLocation].autoindex.find("off"))
 					client->flagResponse->ifautoIndex = false;
 				if (!block_server[nBlock].list_of_location[nLocation].returno.empty())
@@ -305,12 +328,12 @@ int responseClient::check_if_location_matched()
 
 int responseClient::ft_response()
 {
-	///check if error in request
-	if (!client->request_data_struct->nbrStatus.empty() || check_method())
-		return (send_error_status(client->request_data_struct->nbrStatus.c_str()));
 	///check if client is conected 
 	if (client->flagResponse->isReading)
 		send_data();
+	///check if error in request
+	else if (!client->request_data_struct->nbrStatus.empty() || check_method())
+		return (send_error_status(client->request_data_struct->nbrStatus.c_str()));
 	else
 	{
 		client->flagResponse->isReading = true;
@@ -332,12 +355,6 @@ int responseClient::ft_response()
 				root = block_server[nServer].root;
 				index = block_server[nServer].index;
 				nBlock = nServer;
-				//check if methode allowed
-				if (block_server[nBlock].allow_method.find(client->request_data_struct->method) != std::string::npos)
-				{
-					std::cout << "Method Not Allowed" << std::endl;
-					return send_error_status("405");
-				}
 				//#### matching location
 				if (block_server[nServer].list_of_location.size() == 0)
 					noLocation();
