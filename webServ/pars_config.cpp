@@ -36,7 +36,7 @@ void print_block_server(std::vector<config_file> block_server)
     }
 }
 
-void location_pars(std::vector<config_file> *block_server, std::vector<std::string> temp_split_data, size_t ifind, size_t j, size_t i)
+size_t location_pars(std::vector<config_file> *block_server, std::vector<std::string> temp_split_data, size_t ifind, size_t j, size_t i)
 {
     location_struct tmp_node;
     while (temp_split_data[j].compare(0, 9, "]") != 0 && j < temp_split_data.size() - 1)
@@ -58,6 +58,7 @@ void location_pars(std::vector<config_file> *block_server, std::vector<std::stri
         j++;
     }
     (*block_server)[i].list_of_location.push_back(tmp_node);
+    return j;
 }
 
 void check_port(std::vector<config_file> *block_server, size_t ifind, size_t i)
@@ -214,7 +215,7 @@ void block_to_variable(std::vector<config_file> *block_server)
                     (*block_server)[i].index = temp_split_data[j].substr(ifind + 1);
                 else if (temp_split_data[j].compare(0, 9, "location ") == 0)
                     // here just the location content
-                    location_pars(block_server, temp_split_data, ifind, j, i);
+                    j = location_pars(block_server, temp_split_data, ifind, j, i);
             }
         }
         if ((*block_server)[i].listen.empty())
