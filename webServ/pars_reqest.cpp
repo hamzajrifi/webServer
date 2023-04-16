@@ -15,23 +15,26 @@ void pars_request_header(client_info *client)
         temp_split_data.push_back(roma);
         roma = strtok(NULL, "\r\n");
     }
-    //if (temp_split_data[0].compare(0, 5, "GET /") == 0 || temp_split_data[0].compare(0, 8, "DELETE /") == 0 || temp_split_data[0].compare(0, 6, "POST /") == 0)
-    //{
-        client->request_data_struct->method = strtok(client->request, " ");
-        client->request_data_struct->path = strtok(NULL, " ");
-        for(size_t j = 0; j < temp_split_data.size(); j++)
-        {
-            size_t ifind = temp_split_data[j].find(" ");// split, for after the space in every line 
-            if (temp_split_data[j].compare(0, 6, "Host: ") == 0)
-                client->request_data_struct->host = temp_split_data[j].substr(ifind + 1);
-            else if (temp_split_data[j].compare(0, 16, "Content-Length: ") == 0)
-                client->request_data_struct->content_Length = temp_split_data[j].substr(ifind + 1);
-            else if (temp_split_data[j].compare(0, 19, "Transfer-Encoding: ") == 0)
-                client->request_data_struct->transfer_Encoding = temp_split_data[j].substr(ifind + 1);
-            else if (temp_split_data[j].compare(0, 14, "Content-Type: ") == 0)
-                client->request_data_struct->content_Type = temp_split_data[j].substr(ifind + 1);
-        }
-    //}
+    client->request_data_struct->method = strtok(client->request, " ");
+    //just add that
+    if (client->request_data_struct->method.compare("GET") != 0 && client->request_data_struct->method.compare("DELETE") != 0 && client->request_data_struct->method.compare("POST") != 0)
+    {
+        client->request_data_struct->nbrStatus = "501";
+        return;
+    }
+    client->request_data_struct->path = strtok(NULL, " ");
+    for(size_t j = 0; j < temp_split_data.size(); j++)
+    {
+        size_t ifind = temp_split_data[j].find(" ");// split, for after the space in every line 
+        if (temp_split_data[j].compare(0, 6, "Host: ") == 0)
+            client->request_data_struct->host = temp_split_data[j].substr(ifind + 1);
+        else if (temp_split_data[j].compare(0, 16, "Content-Length: ") == 0)
+            client->request_data_struct->content_Length = temp_split_data[j].substr(ifind + 1);
+        else if (temp_split_data[j].compare(0, 19, "Transfer-Encoding: ") == 0)
+            client->request_data_struct->transfer_Encoding = temp_split_data[j].substr(ifind + 1);
+        else if (temp_split_data[j].compare(0, 14, "Content-Type: ") == 0)
+            client->request_data_struct->content_Type = temp_split_data[j].substr(ifind + 1);
+    }
 }
 
 void pars_request_body(client_info *client, std::string data)
