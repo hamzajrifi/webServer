@@ -7,6 +7,7 @@
 #include <fstream>
 #include <sstream>
 #include <string.h>
+#include <dirent.h>
 
 #define BSIZE 9024
 struct client_info;
@@ -40,6 +41,7 @@ class  responseClient{
     /// block server 
     std::string root;
     std::string index;
+
     std::vector<config_file> &block_server;
     int nBlock;
     size_t nLocation;
@@ -49,9 +51,11 @@ class  responseClient{
     std::map<std::string, std::string> statusCodes;
     /// file 
     std::stringstream buff; 
+    std::stringstream buff2; 
     responseClient(std::vector<config_file> &blockServer);
     int         checkUri(std::string);
     int         root_directory_if_existe();
+    size_t      list_current_directory(std::string);
     static int  getMethod(responseClient&);
     static int  postMethod(responseClient&);
     static int  deleteMethod(responseClient&);
@@ -64,10 +68,11 @@ class  responseClient{
     int         error_301();
     int         get_default_error_page(std::string nbStatus);
     int         check_method();
+    const char *get_content_type(const char* path) ;
 };
 
 
-const char *get_content_type(const char* path) ;
+
 //// utils.cpp
 
 #endif
