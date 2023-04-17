@@ -88,7 +88,9 @@ int main(int argc, char **argv)
 {
     if (argc == 2)
     {
+        signal(SIGPIPE, SIG_IGN);
         std::vector<config_file> block_server = pars_confile(argv[1]);// just i pars the config file
+        std::cout << block_server[0].upload_file << std::endl;
         //print_block_server(block_server);
         unsigned long i = 0;
         std::vector<int> server;

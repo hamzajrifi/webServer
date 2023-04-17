@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string.h>
 #include <dirent.h>
+#include <unistd.h>
 
 #define BSIZE 9024
 struct client_info;
@@ -68,7 +69,11 @@ class  responseClient{
     int         error_301();
     int         get_default_error_page(std::string nbStatus);
     int         check_method();
-    const char *get_content_type(const char* path) ;
+    const char *get_content_type(const char* path);
+
+    ///cgi
+    std::string cgi_path;
+    int    handle_cgi();
 };
 
 

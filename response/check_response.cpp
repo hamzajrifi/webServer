@@ -413,7 +413,7 @@ int responseClient::check_if_location_matched()
 
 int responseClient::ft_response()
 {
-    ///check if client is conected 
+    ///check if client is conected
     if (client->flagResponse->isReading)
         send_data();
     ///check if error in request
@@ -449,6 +449,8 @@ int responseClient::ft_response()
                 /// get current root Directory
                 if (root_directory_if_existe())
                     return nbrstatus;
+                // if (client.ifNeedCgi)
+                    handle_cgi();
                 /// calling Methode needed
                 methodeFunction[client->request_data_struct->method](*this);
                 return nbrstatus;
@@ -459,6 +461,6 @@ int responseClient::ft_response()
                 noServerMatched = true;
             }
         }
-    }	
+    }
     return 0;
 }
