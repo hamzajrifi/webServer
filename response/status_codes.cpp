@@ -46,7 +46,8 @@ int     responseClient::send_error_status(std::string nbStatus)
 				<< "\r\nContent-Type: "  << content_type \
 				<< "\r\n\r\n";
 
-		write(client->socket, &buff.str()[0], buff.str().length());
+		if (write(client->socket, &buff.str()[0], buff.str().length()) < 0)
+    		std::cout << "write fieled444444444 " << std::endl;
 	}
 	nbrstatus = atoi(nbStatus.c_str());
 	return nbrstatus;

@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
-
-<h1> simple page </h1>
+<body>
+    <h1> simple page </h1>
+    <?php
+        shell_exec('echo Hello > /tmp/hello.txt');
+    ?>
+</body>
 
 </html>

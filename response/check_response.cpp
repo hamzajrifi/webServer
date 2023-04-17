@@ -7,21 +7,48 @@ const char *responseClient::get_content_type(const char* path)
     const char *last_dot = strrchr(path, '.');
 
     if (last_dot) {
-        if (strcmp(last_dot, ".css") == 0) return "text/css";
-        if (strcmp(last_dot, ".csv") == 0) return "text/csv";
-        if (strcmp(last_dot, ".gif") == 0) return "image/gif";
-        if (strcmp(last_dot, ".html") == 0) return "text/html";
-        if (strcmp(last_dot, ".ico") == 0) return "image/x-icon";
-        if (strcmp(last_dot, ".jpeg") == 0) return "image/jpeg";
-        if (strcmp(last_dot, ".jpg") == 0) return "image/jpeg";
-        if (strcmp(last_dot, ".js") == 0) return "application/javascript";
-        if (strcmp(last_dot, ".json") == 0) return "application/json";
-        if (strcmp(last_dot, ".png") == 0) return "image/png";
-        if (strcmp(last_dot, ".pdf") == 0) return "application/pdf";
-        if (strcmp(last_dot, ".svg") == 0) return "image/svg+xml";
-        if (strcmp(last_dot, ".txt") == 0) return "text/plain";
-        if (strcmp(last_dot, ".mp4") == 0) return "video/mp4";
-        if (strcmp(last_dot, ".htm") == 0 || client->flagResponse->ifautoIndex) return "text/html";
+        if (strcmp(last_dot,".php" ) == 0) return "text/html";
+        if (strcmp(last_dot,".csv" ) == 0) return "text/csv";
+        if (strcmp(last_dot,".gif" ) == 0) return "image/gif";
+        if (strcmp(last_dot,".htm" ) == 0) return "text/html";
+        if (strcmp(last_dot,".html") == 0) return "text/html";
+        if (strcmp(last_dot,".ico" ) == 0) return "image/x-icon";
+        if (strcmp(last_dot,".jpeg") == 0) return "image/jpeg";
+        if (strcmp(last_dot,".jpg" ) == 0) return "image/jpeg";
+        if (strcmp(last_dot,".js"  ) == 0) return "application/javascript";
+        if (strcmp(last_dot,".json") == 0) return "application/json";
+        if (strcmp(last_dot,".pdf" ) == 0) return "application/pdf";
+        if (strcmp(last_dot,".png" ) == 0) return "image/png";
+        if (strcmp(last_dot,".svg" ) == 0) return "image/svg+xml";
+        if (strcmp(last_dot,".txt" ) == 0) return "text/plain";
+        if (strcmp(last_dot,".mp4" ) == 0) return "video/mp4";
+        if (strcmp(last_dot,".WebM") == 0) return "video/webm";
+        if (strcmp(last_dot,".Ogg" ) == 0) return "video/ogg";
+        if (strcmp(last_dot,".AVI" ) == 0) return "video/x-msvideo";
+        if (strcmp(last_dot,".MPEG") == 0) return "video/mpeg";
+        if (strcmp(last_dot,".tiff") == 0) return "image/tiff";
+        if (strcmp(last_dot,".tif" ) == 0) return "image/tiff";
+        if (strcmp(last_dot,".xml" ) == 0) return "application/xml";
+        if (strcmp(last_dot,".zip" ) == 0) return "application/zip";
+        if (strcmp(last_dot,".gz"  ) == 0) return "application/gzip";
+        if (strcmp(last_dot,".tar" ) == 0) return "application/x-tar";
+        if (strcmp(last_dot,".rar" ) == 0) return "application/x-rar-compressed";
+        if (strcmp(last_dot,".7z"  ) == 0) return "application/x-7z-compressed";
+        if (strcmp(last_dot,".mp3" ) == 0) return "audio/mpeg";
+        if (strcmp(last_dot,".wav" ) == 0) return "audio/wav";
+        if (strcmp(last_dot,".ogg" ) == 0) return "audio/ogg";
+        if (strcmp(last_dot,".flac") == 0) return "audio/flac";
+        if (strcmp(last_dot,".aac" ) == 0) return "audio/aac";
+        if (strcmp(last_dot,".mpga") == 0) return "audio/mpeg";
+        if (strcmp(last_dot,".mid" ) == 0) return "audio/midi";
+        if (strcmp(last_dot,".midi") == 0) return "audio/midi";
+        if (strcmp(last_dot,".ppt" ) == 0) return "application/vnd.ms-powerpoint";
+        if (strcmp(last_dot,".pptx") == 0) return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+        if (strcmp(last_dot,".xls" ) == 0) return "application/vnd.ms-excel";
+        if (strcmp(last_dot,".xlsx") == 0) return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        if (strcmp(last_dot,".doc" ) == 0) return "application/msword";
+        if (strcmp(last_dot,".docx") == 0) return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        if (client->flagResponse->ifautoIndex) return "text/html";
     }
 
     return "application/octet-stream";
@@ -56,7 +83,7 @@ size_t	responseClient::list_current_directory(std::string _uri)
     
     dirp = opendir( _uri.c_str() );
     if( dirp == NULL ) {
-        perror( "can't open /home/fred" );
+        // perror( "can't open /home/fred" );
     } else {
         buff2 << "<!DOCTYPE html> \
                 <html> \
@@ -84,7 +111,6 @@ size_t	responseClient::list_current_directory(std::string _uri)
         for(;;) {
             direntp = readdir( dirp );
             if( direntp == NULL ) break;
-            std::cout << "uri  " << client->request_data_struct->path << " tect " << (client->request_data_struct->path.length() == 1 ? "" : client->request_data_struct->path)  << std::endl;
             buff2 << "<tr><td data-value=\"" << direntp->d_name << "\"><a class=\"icon file\" draggable=\"true\" href=\"" << \
                         (client->request_data_struct->path.length() == 1 ? "/" : client->request_data_struct->path + "/") << direntp->d_name << "\">" << direntp->d_name << "</a></td></rtr>";
             // printf( "%s\n", direntp->d_name );
@@ -159,9 +185,12 @@ int responseClient::getMethod(responseClient& cl)
                 << "\r\nConnection: close\r\n"\
                 << "\r\n";
 
-            write(cl.client->socket, cl.buff.str().c_str(), cl.buff.str().length());
+    if (write(cl.client->socket, cl.buff.str().c_str(), cl.buff.str().length()) < 0)
+        std::cout << "write fieled222222222 " << std::endl;
     if (cl.client->flagResponse->ifautoIndex)
-        write(cl.client->socket, cl.buff2.str().c_str(), cl.buff2.str().length());
+        if (write(cl.client->socket, cl.buff2.str().c_str(), cl.buff2.str().length()) < 0)
+            std::cout << "write fieled11111 " << std::endl;
+
     // std::cout << "*-*-*-*-*-*-*-* GET methode *-*-*-*-*-*-*-*" << std::endl;
     return 0;
 }

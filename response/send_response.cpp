@@ -18,7 +18,5 @@ int responseClient::send_data()
             // std::cout << "file close sending.........." << std::endl;
             drop_client(client);
         }
-    
-    
     return 0;
 }
