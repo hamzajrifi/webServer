@@ -9,6 +9,7 @@
 #include <vector>
 #include <map>
 #include <iterator>
+#include <signal.h>
 
 #include "../response/response.hpp"
 class responseClient;
@@ -40,6 +41,7 @@ struct config_file
     size_t  max_number;
     std::string allow_method;
     std::vector<location_struct> list_of_location;
+    std::string upload_file;
 };
 
 struct  ft_fdSet{
