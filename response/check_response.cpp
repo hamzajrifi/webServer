@@ -446,13 +446,16 @@ int responseClient::ft_response()
                     noLocation();
                 else if (check_if_location_matched())
                     return nbrstatus;
+                    
                 /// get current root Directory
                 if (root_directory_if_existe())
                     return nbrstatus;
+
                 // if (client.ifNeedCgi)
-                    handle_cgi();
+                    return handle_cgi();
+                    
                 /// calling Methode needed
-                methodeFunction[client->request_data_struct->method](*this);
+                //methodeFunction[client->request_data_struct->method](*this);
                 return nbrstatus;
             }
             else if (nServer == block_server.size() - 2)
