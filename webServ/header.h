@@ -48,6 +48,12 @@ struct  ft_fdSet{
     fd_set reads, write;
 };
 
+struct s_boundary{
+    std::string Content_Disposition;
+    std::string name;
+    std::string content;
+};
+
 struct client_request
 {
     std::string path;
@@ -57,6 +63,7 @@ struct client_request
     std::string content_Length;
     std::string transfer_Encoding;
     std::string content_Type;
+    std::vector<s_boundary> boundary_list;
     std::string nbrStatus;
 };
 

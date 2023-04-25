@@ -45,7 +45,7 @@ void drop_client(struct client_info *client)
     exit(1);
 }
 
-fd_set wait_on_clients(std::vector<int> server_socket, ft_fdSet& dataSelect)
+fd_set wait_on_clients(std::vector<int> server_socket, ft_fdSet&  dataSelect)
 {
     
     FD_ZERO(&dataSelect.reads);

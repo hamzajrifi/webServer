@@ -1,4 +1,4 @@
 <?php
-echo getcwd();
-//  phpinfo();
+// echo getcwd();
+ phpinfo();
 ?>

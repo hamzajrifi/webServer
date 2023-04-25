@@ -135,14 +135,14 @@ int responseClient::checkUri(std::string _uri)
     }
     else
     {
-        std::cout << "path valid !" << std::endl;
+        //std::cout << "path valid !" << std::endl;
         client->flagResponse->file_RW.open(_uri);
         if (!client->flagResponse->file_RW)
         {
-            std::cout << " _uri not file !  " <<  _uri  << std::endl;
+            //std::cout << " _uri not file !  " <<  _uri  << std::endl;
             if (client->flagResponse->ifautoIndex)
             {
-                std::cout << "inside uri " << std::endl;
+                //std::cout << "inside uri " << std::endl;
                 uri = _uri;
                 return 0;
             } //list_current_directory(_uri);
@@ -355,7 +355,7 @@ int responseClient::root_directory_if_existe()
     }
     else if (root[0] != '/')    
         root = "/" + root;
-         std::cout << "request path "<< client->request_data_struct->path << "\n "<< std::endl;
+        //std::cout << "request path "<< client->request_data_struct->path << "\n "<< std::endl;
     nbrstatus = checkUri(root + client->request_data_struct->path.substr(1, client->request_data_struct->path.length()));
     return nbrstatus;
 }
@@ -431,7 +431,7 @@ int responseClient::ft_response()
         noServerMatched = false;
         for(size_t nServer=0; nServer < block_server.size() - 1; nServer++)
         {
-            std::cout << "size body : " << block_server[nServer].max_number << std::endl;
+            //std::cout << "size body : " << block_server[nServer].max_number << std::endl;
             if (!client->request_data_struct->method.find("POST") && client->request_data_struct->body.size() > block_server[nServer].max_number)
                 return send_error_status("413");
             if (((!block_server[nServer].server_name.compare(host_serv) || !block_server[nServer].server.compare(host_serv)) \
