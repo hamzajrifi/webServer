@@ -12,7 +12,8 @@ C_FILES = 	pars_reqest.cpp \
 			../response/send_response.cpp\
 			../response/check_response.cpp\
 			../response/utils.cpp\
-			../response/status_codes.cpp
+			../response/status_codes.cpp\
+			../response/cgi-php/php_cgi.cpp
 
 HEADERS =	header.h\
 			../response/response.hpp

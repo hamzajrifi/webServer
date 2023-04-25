@@ -12,7 +12,7 @@ int responseClient::send_data()
 
         client->flagResponse->lenRead += client->flagResponse->file_RW.gcount();
         // if (client->flagResponse->file_RW.eof())
-        if ((size_t)client->flagResponse->content_length <= client->flagResponse->lenRead || client->flagResponse->file_RW.gcount() == 0)
+        if (client->flagResponse->file_RW.gcount() == 0)
         {
             client->flagResponse->isReading = false;
             client->flagResponse->file_RW.close();
