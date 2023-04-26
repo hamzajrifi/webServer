@@ -9,6 +9,7 @@
 #include <string.h>
 #include <dirent.h>
 #include <unistd.h>
+#include <time.h>
 
 #define BSIZE 9024
 struct client_info;
@@ -45,11 +46,13 @@ class  responseClient{
 
     std::vector<config_file> &block_server;
     int nBlock;
-    size_t nLocation;
+    size_t nbrLocation;
     bool    noServerMatched;
 
     std::map<std::string, int (*)(responseClient&)> methodeFunction;
     std::map<std::string, std::string> statusCodes;
+    /// time  
+    time_t rawtime;
     /// file 
     std::stringstream buff; 
     std::stringstream buff2; 

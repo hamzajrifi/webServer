@@ -116,7 +116,7 @@ int main(int argc, char **argv)
                     client->flagResponse = new Flag_respose;
                     client->flagResponse->isReading = false;
                     client->flagResponse->lenRead = 0;
-					client->flagResponse->ifautoIndex = true;
+					client->flagResponse->ifautoIndex = false;
         			client->flagResponse->isLocation = false;
 
                     client->socket = accept(server[i], nullptr, nullptr);

@@ -23,6 +23,7 @@ struct location_struct
     std::string allow_method;
     std::string returno;
     std::string autoindex;
+    std::string cgi_path;
 };
 
 struct config_file
