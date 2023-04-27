@@ -10,26 +10,21 @@ int    responseClient::handle_cgi()
 
     t_fd = open(client->flagResponse->tmp_file.str().c_str(), O_RDWR | O_CREAT, 0664 );
     std::cout << "uri " << uri << std::endl;
-    std::string tmp = "SCRIPT_FILENAME=/Users/hjrifi/Desktop/serr/index/Binary/adminer-4.8.1.php";
 
-    if (!client->flagResponse->file_RW)
-		std::cout << "Error \n";
-		
-        char *envp[4] = { (char *)"REQUEST_METHOD=GET"
-                            , (char *)tmp.c_str()\
-                            , (char *)"REDIRECT_STATUS=200"\
-                            , NULL};
-    for (size_t i = 0; i < 3; i++)
-    {
-        std::cout << "env " << envp[i] << std::endl;
-    }
-    
     char *argv[3];
-    tmp.clear();
-    tmp = "/Users/hjrifi/Desktop/serr/index/Binary/adminer-4.8.1.php";
     argv[0] = (char*)"php-cgi";
-    argv[1] = (char *)tmp.c_str();
+    argv[1] = (char *) uri.c_str();
     argv[2] = NULL;
+
+    char *envp[4];
+    std::string tmpEnv_Uri = "SCRIPT_FILENAME=";
+    tmpEnv_Uri.append(argv[1]);
+    envp[0] = (char *)"REQUEST_METHOD=GET";
+    envp[1] = (char *)tmpEnv_Uri.c_str();
+    envp[2] = (char *)"REDIRECT_STATUS=200";
+    envp[3] = NULL;
+
+
     pid_t pid = fork();
     if (pid == -1) {
             unlink(client->flagResponse->tmp_file.str().c_str());

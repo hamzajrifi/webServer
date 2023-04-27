@@ -48,8 +48,8 @@ const char *responseClient::get_content_type(const char* path)
         if (strcmp(last_dot,".xlsx") == 0) return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
         if (strcmp(last_dot,".doc" ) == 0) return "application/msword";
         if (strcmp(last_dot,".docx") == 0) return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-        if (client->flagResponse->ifautoIndex) return "text/html";
     }
+        if (client->flagResponse->ifautoIndex) return "text/html";
 
     return "application/octet-stream";
 }

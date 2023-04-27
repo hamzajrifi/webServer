@@ -55,6 +55,7 @@ int	responseClient::check_method()
 int responseClient::getMethod(responseClient& cl)
 {
     cl.content_type = cl.get_content_type(cl.uri.c_str());
+    std::cout << "type " << cl.content_type  << std::endl;
     cl.client->flagResponse->file_RW.seekg(0, std::ios::end);
     cl.client->flagResponse->content_length = cl.client->flagResponse->file_RW.tellg();
     cl.client->flagResponse->file_RW.seekg(0,std::ios::beg);
