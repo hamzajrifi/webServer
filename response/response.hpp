@@ -16,7 +16,8 @@ struct client_info;
 struct config_file;
 
 struct  Flag_respose{
-    bool isReading;
+    std::stringstream tmp_file;
+    bool        isReading;
     std::fstream	file_RW;
     size_t      lenRead;
     size_t      content_length;

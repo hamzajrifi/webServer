@@ -2,6 +2,7 @@
 
 int responseClient::send_data()
 {
+    std::cout << "sending .... " << std::endl;
     // std::cout << "fd = " << client->socket << " content lenght : " << client->flagResponse->content_length << std::endl;
 
         client->flagResponse->file_RW.read(res_body, BSIZE);
