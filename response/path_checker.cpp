@@ -5,21 +5,26 @@ int responseClient::checkUri(std::string _uri)
     struct stat info;
 
     // std::cout << "********** =>>> path = [" << _uri << "] <<<= **********\n" << std::endl;
-    if (stat(_uri.c_str(), &info) != 0 && block_server[nBlock].list_of_location[nbrLocation].cgi_path.empty())/// add flag cgi 
+    //check path if cgi uri
+    uri = _uri;
+    if (client->flagResponse->isLocation && !block_server[nBlock].list_of_location[nbrLocation].cgi_path.empty() 
+                    && _uri.find("?") != std::string::npos)
+                   _uri = pars_cgi_uri();
+    if (stat(_uri.c_str(), &info) != 0)/// add flag cgi 
     {
         std::cout << "path not valid" << std::endl;   
        return send_error_status("404");
     }
     else
     {
-        // std::cout << "path valid !" << std::endl;
+        std::cout << "path valid !" << std::endl;
         client->flagResponse->file_RW.open(_uri);
         if (!client->flagResponse->file_RW)
         {
-            // std::cout << " _uri not file !  " <<  _uri  << std::endl;
+            std::cout << " _uri not file !  " <<  _uri  << std::endl;
             if (client->flagResponse->ifautoIndex)
             {
-                // std::cout << "inside uri " << std::endl;
+                std::cout << "inside uri " << std::endl;
                 uri = _uri;
                 return 0;
             }
@@ -61,7 +66,6 @@ int responseClient::root_directory_if_existe()
         tmp_uriroot.push_back(roma);
         roma = strtok(NULL, "/");
     }
-    //// leaks it
     for (std::vector<std::string>::iterator it =  tmp_uriroot.begin(); it != tmp_uriroot.end();)
     {
         if (it->compare("..") == 0 || it->compare(".") == 0)

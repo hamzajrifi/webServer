@@ -215,18 +215,25 @@ int responseClient::ft_response()
                     noLocation();
                 else if (check_if_location_matched())
                     return nbrstatus;
-
-                /// get current root Directory
+                std::cout << "last uri " << uri << std::endl;
                 if (root_directory_if_existe())
                     return nbrstatus;
-                if (client->flagResponse->isLocation && !block_server[nBlock].list_of_location[nbrLocation].cgi_path.empty())
+                
+                std::cout << "last uri " << uri << std::endl;
+                /// get current root Directory
+                client->flagResponse->file_RW.close();
+                client->flagResponse->file_RW.open(uri);
+                if (client->flagResponse->isLocation && !block_server[nBlock].list_of_location[nbrLocation].cgi_path.empty() 
+                    && client->flagResponse->file_RW)
                 {
                     std::cout << "----- CGI -----" << std::endl;
                     handle_cgi();
                 }
-                else
                 /// calling Methode needed
-                methodeFunction[client->request_data_struct->method](*this);
+                else
+                {
+                    methodeFunction[client->request_data_struct->method](*this);
+                }
 
                 return nbrstatus;
             }

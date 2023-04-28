@@ -33,14 +33,16 @@ class  responseClient{
 
     std::string tmp_string;
     std::string locationMatched;
-    char    buffer_response[BSIZE];
-    char    statusCode[20];
-    int     nbrstatus;
-    char    res_body[BSIZE];
+    char        buffer_response[BSIZE];
+    char        statusCode[20];
+    int         nbrstatus;
+    char        res_body[BSIZE];
     std::string content_type;
-    size_t  centenet_lenght;
+    size_t      centenet_lenght;
+    size_t      found;
+    std::vector<std::string> aEnv;
     ///
-    char    *mediaType;
+    char        *mediaType;
     std::string uri;
     /// block server 
     std::string root;
@@ -48,7 +50,7 @@ class  responseClient{
 
     std::vector<config_file> &block_server;
     int nBlock;
-    size_t nbrLocation;
+    size_t  nbrLocation;
     bool    noServerMatched;
 
     std::map<std::string, int (*)(responseClient&)> methodeFunction;
@@ -79,7 +81,7 @@ class  responseClient{
     ///cgi
     std::string cgi_path;
     int     handle_cgi();
-    int     pars_cgi_uri();
+    std::string&     pars_cgi_uri();
 };
 
 
