@@ -28,6 +28,7 @@ int responseClient::check_if_location_matched()
             && lenPathLocation <= block_server[nBlock].list_of_location[nLocation].path.length()))
             {
                 nbrLocation = nLocation;
+                locationMatched = block_server[nBlock].list_of_location[nLocation].path;
                 if (!block_server[nBlock].list_of_location[nLocation].allow_method.empty() && check_method())
                     return send_error_status("405");
                 if (!block_server[nBlock].list_of_location[nLocation].autoindex.find("on"))

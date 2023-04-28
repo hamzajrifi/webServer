@@ -90,11 +90,17 @@ size_t	responseClient::list_current_directory(std::string _uri)
             direntp = readdir( dirp );
             if( direntp == NULL ) break;
             buff2 << "<tr><td data-value=\"" << direntp->d_name << "\"><a class=\"icon file\" draggable=\"true\" href=\"" << \
-                        (client->request_data_struct->path.length() == 1 ? "/" : client->request_data_struct->path + "/") << direntp->d_name << "\">" << direntp->d_name << "</a></td></rtr>";
-            // printf( "%s\n", direntp->d_name );
+                        ((client->request_data_struct->path.length() == 1 && !client->flagResponse->isLocation) ? "/" : \
+
+                            client->flagResponse->isLocation ? (locationMatched + client->request_data_struct->path + "/") :\
+
+                                client->request_data_struct->path)\
+                                
+                    << direntp->d_name << "\">" << direntp->d_name << "</a></td></rtr>";
         }
             buff2 << "</tbody></table> </body> </html> ";
         closedir( dirp );
+        std::cout << ">> " << locationMatched  << "--" << client->request_data_struct->path << std::endl;
         client->flagResponse->content_length  = buff2.str().length();
         return 403;
     }

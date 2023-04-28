@@ -5,9 +5,9 @@ int responseClient::checkUri(std::string _uri)
     struct stat info;
 
     // std::cout << "********** =>>> path = [" << _uri << "] <<<= **********\n" << std::endl;
-    if (stat(_uri.c_str(), &info) != 0)
+    if (stat(_uri.c_str(), &info) != 0 && block_server[nBlock].list_of_location[nbrLocation].cgi_path.empty())/// add flag cgi 
     {
-        // std::cout << "path not valid" << std::endl;   
+        std::cout << "path not valid" << std::endl;   
        return send_error_status("404");
     }
     else
@@ -35,7 +35,7 @@ int responseClient::checkUri(std::string _uri)
 
             if (!client->flagResponse->file_RW)
             {
-                // std::cout << " file not valid !  " <<  _uri + index << std::endl;
+                std::cout << " file not valid !  " <<  _uri + index << std::endl;
                 return send_error_status("404");
             }
             uri = _uri + index;
@@ -54,13 +54,14 @@ int responseClient::root_directory_if_existe()
     if (root[root.length() - 1] != '/')
         root = root + "/";
     root = currentDe + "/" + root;
-    std::cout << "root" << root << std::endl;
+    // std::cout << "root" << root << std::endl;
     char *roma = strtok((char *)root.c_str(), "/");
     while (roma != nullptr)
-        {
-            tmp_uriroot.push_back(roma);
-            roma = strtok(NULL, "/");
-        }
+    {
+        tmp_uriroot.push_back(roma);
+        roma = strtok(NULL, "/");
+    }
+    //// leaks it
     for (std::vector<std::string>::iterator it =  tmp_uriroot.begin(); it != tmp_uriroot.end();)
     {
         if (it->compare("..") == 0 || it->compare(".") == 0)
@@ -76,9 +77,9 @@ int responseClient::root_directory_if_existe()
     for (size_t i = 0; i < tmp_uriroot.size(); i++)
         {
             root += "/" + tmp_uriroot[i];
-            std::cout << " arg = "<< tmp_uriroot[i] << std::endl;
+            // std::cout << " arg = "<< tmp_uriroot[i] << std::endl;
         }
-    std::cout << root << std::endl;
+    // std::cout << root << std::endl;
     root += "/";
     if (root[0] != '/')    
         root = "/" + root;

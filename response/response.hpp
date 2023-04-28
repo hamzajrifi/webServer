@@ -30,8 +30,9 @@ class  responseClient{
     
     public:
     client_info *client;
-    client_info *next;
 
+    std::string tmp_string;
+    std::string locationMatched;
     char    buffer_response[BSIZE];
     char    statusCode[20];
     int     nbrstatus;
@@ -74,10 +75,11 @@ class  responseClient{
     int         get_default_error_page(std::string nbStatus);
     int         check_method();
     const char *get_content_type(const char* path);
-
+    int         read_data_from_cgi();
     ///cgi
     std::string cgi_path;
-    int    handle_cgi();
+    int     handle_cgi();
+    int     pars_cgi_uri();
 };
 
 
