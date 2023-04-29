@@ -19,7 +19,6 @@ struct  Flag_respose{
     std::stringstream tmp_file;
     bool        isReading;
     std::fstream	file_RW;
-    size_t      lenRead;
     size_t      content_length;
     bool        ifautoIndex;
     std::string allowedMethod;

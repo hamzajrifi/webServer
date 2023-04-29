@@ -17,11 +17,7 @@ int responseClient::check_if_location_matched()
 
     found  = 0;
     while((found = client->request_data_struct->path.find("//")) != std::string::npos)
-    {
-
         client->request_data_struct->path =  client->request_data_struct->path.erase(found, 1);
-        std::cout << "found " << found << "uri path " << client->request_data_struct->path <<std::endl;
-    }   
 
     for(size_t nLocation = 0; nLocation < block_server[nBlock].list_of_location.size(); nLocation++)
     {

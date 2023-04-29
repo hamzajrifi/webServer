@@ -5,13 +5,8 @@ int responseClient::read_data_from_cgi()
 {
     client->flagResponse->file_RW.close();
     client->flagResponse->file_RW.open(client->flagResponse->tmp_file.str());
-    if (!client->flagResponse->file_RW)
-        std::cout << "Error" << std::endl;
-    client->flagResponse->file_RW.seekg(0, std::ios::end);
-    client->flagResponse->content_length = client->flagResponse->file_RW.tellg();
-    client->flagResponse->file_RW.seekg(0, std::ios::beg);
     found = 0;
-    std::cout << "content " << client->flagResponse->content_length << std::endl;
+    tmp_string.clear();
     while (1337)
     {
         client->flagResponse->file_RW.read(res_body, BSIZE);
@@ -21,17 +16,17 @@ int responseClient::read_data_from_cgi()
         found = tmp_string.find("\r\n\r\n");
         if (found != std::string::npos)
         {
-            found += 4;
-            tmp_string = tmp_string.substr(0, found);
-            break;
+           found += 4;
+           tmp_string = tmp_string.substr(0, found);
+           break;
         }
     }
-    std::cout << "found " << found << std::endl;
-
     client->flagResponse->file_RW.close();
     client->flagResponse->file_RW.open(client->flagResponse->tmp_file.str());
-    client->flagResponse->file_RW.seekg(found, std::ios::beg);
+    client->flagResponse->file_RW.seekg(0, std::ios::end);
+    client->flagResponse->content_length = client->flagResponse->file_RW.tellg();
     client->flagResponse->content_length -= found;
+    client->flagResponse->file_RW.seekg(found, std::ios::beg);
 
     return 0;
 }
@@ -74,8 +69,8 @@ int    responseClient::handle_cgi()
     if (uri.find("?") != std::string::npos)
         pars_cgi_uri();
     
-    std::cout << "cgi path  " << block_server[nBlock].list_of_location[nbrLocation].cgi_path << std::endl;
-    std::cout << "uri " << uri << std::endl;
+    // std::cout << "cgi path  " << block_server[nBlock].list_of_location[nbrLocation].cgi_path << std::endl;
+    // std::cout << "uri " << uri << std::endl;
 
     char *argv[3];
     argv[0] = (char*)block_server[nBlock].list_of_location[nbrLocation].cgi_path.c_str();// check cgi path
@@ -96,7 +91,7 @@ int    responseClient::handle_cgi()
     for (size_t i=0; i<aEnv.size(); i++)
     {
         sysEnv[i] = (char *)aEnv[i].c_str();
-        std::cout << "sysEnv " << sysEnv[i] << std::endl;
+        // std::cout << "sysEnv " << sysEnv[i] << std::endl;
     }
         //////////////////////////////////////////////////
     sysEnv[aEnv.size()] = NULL;
@@ -122,21 +117,22 @@ int    responseClient::handle_cgi()
         exit(1);
     }
     else {
-        // Parent process
         // Read output from child process
 
         ///get conetent lenght file
         int status;
         waitpid(pid, &status, 0);
 
-        read_data_from_cgi();
         delete(sysEnv);
+        read_data_from_cgi();
 
         buff.clear();
+        std::cout << "check content = " << tmp_string.find("Content-Type:")<< std::endl;
         buff  << "HTTP/1.1 " << statusCodes["200"] \
+                // << "\r\nContent-Type: text/html"
                 << "\r\nContent-Length: " << client->flagResponse->content_length \
-                << "\r\n" << tmp_string ;
-                std::cout << "xheck header " << tmp_string << std::endl;
+                << tmp_string << "\r\n\r\n";
+                std::cout << "check header " << buff.str() << std::endl;
         write(client->socket, buff.str().c_str(), buff.str().length());
         if (!client->flagResponse->content_length)
         {

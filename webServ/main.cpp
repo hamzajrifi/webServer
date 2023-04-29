@@ -118,7 +118,6 @@ int main(int argc, char **argv)
                     struct client_info *client = get_client(-1);
                     client->flagResponse = new Flag_respose;
                     client->flagResponse->isReading = false;
-                    client->flagResponse->lenRead = 0;
 					client->flagResponse->ifautoIndex = false;
         			client->flagResponse->isLocation = false;
 
