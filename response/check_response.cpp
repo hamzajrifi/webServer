@@ -218,11 +218,12 @@ int responseClient::ft_response()
                 else if (check_if_location_matched())
                     return nbrstatus;
                 std::cout << "last uri " << uri << std::endl;
+                // ---- ----  get current root Directory ---- ---- //
                 if (root_directory_if_existe())
                     return nbrstatus;
                 
                 std::cout << "last uri " << uri << std::endl;
-                // ---- ----  get current root Directory ---- ---- //
+                //----- ----- check uri if is valid
                 client->flagResponse->file_RW.close();
                 client->flagResponse->file_RW.open(uri);
 

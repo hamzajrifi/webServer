@@ -78,9 +78,13 @@ class  responseClient{
     const char *get_content_type(const char* path);
     int         read_data_from_cgi();
     ///cgi
-    std::string cgi_path;
-    int     handle_cgi();
-    std::string&     pars_cgi_uri();
+    char            **sysEnv;
+    char            *argv[3];
+    int             cgi_fd[2];
+    int             execute_cgi_file();
+    std::string     cgi_path;
+    int             handle_cgi();
+    std::string&    pars_cgi_uri();
 };
 
 
