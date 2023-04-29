@@ -181,22 +181,22 @@ responseClient::responseClient(std::vector<config_file> &blockServer):block_serv
 
 int responseClient::ft_response()
 {
-    ///check if client is conected
+    // ---- ---- check if client is conected ---- ---- //
     if (client->flagResponse->isReading)
         send_data();
-    ///check if error in request
+    // ---- ---- check if error in request ---- ---- //
     else if (!client->request_data_struct->nbrStatus.empty() || check_method())
         return (send_error_status(client->request_data_struct->nbrStatus.c_str()));
     else
     {
         time (&rawtime);
         client->flagResponse->isReading = true;
-        ///#### check server block
+        // ---- ----  check server block ---- ---- //
         int sfind = client->request_data_struct->host.find(":");
         std::string host_serv = client->request_data_struct->host.substr(0, sfind);
         std::string port_serv = client->request_data_struct->host.substr(sfind + 1, client->request_data_struct->host.length());
         nbrstatus = 0;
-        /// check Block Server
+        // ---- ----  check Block Server ---- ---- //
         noServerMatched = false;
         for(size_t nServer=0; nServer < block_server.size() - 1; nServer++)
         {
@@ -210,7 +210,7 @@ int responseClient::ft_response()
                 root = block_server[nServer].root;
                 index = block_server[nServer].index;
                 nBlock = nServer;
-                //#### matching location
+                 // ---- ----  matching location ---- ---- //
                 if (block_server[nServer].list_of_location.size() == 0)
                     noLocation();
                 else if (check_if_location_matched())
@@ -220,7 +220,7 @@ int responseClient::ft_response()
                     return nbrstatus;
                 
                 std::cout << "last uri " << uri << std::endl;
-                /// get current root Directory
+                // ---- ----  get current root Directory ---- ---- //
                 client->flagResponse->file_RW.close();
                 client->flagResponse->file_RW.open(uri);
                 if (client->flagResponse->isLocation && !block_server[nBlock].list_of_location[nbrLocation].cgi_path.empty() 
@@ -229,11 +229,9 @@ int responseClient::ft_response()
                     std::cout << "----- CGI -----" << std::endl;
                     handle_cgi();
                 }
-                /// calling Methode needed
+                // ---- ----  calling Methode needed ---- ---- //
                 else
-                {
                     methodeFunction[client->request_data_struct->method](*this);
-                }
 
                 return nbrstatus;
             }
