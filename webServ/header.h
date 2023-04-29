@@ -64,6 +64,7 @@ struct client_request
     std::string content_Length;
     std::string transfer_Encoding;
     std::string content_Type;
+    std::string cookie;
     std::vector<s_boundary> boundary_list;
     std::string nbrStatus;
 };

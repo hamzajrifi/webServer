@@ -181,6 +181,8 @@ responseClient::responseClient(std::vector<config_file> &blockServer):block_serv
 
 int responseClient::ft_response()
 {
+        std::cout << "body " <<client->request_data_struct->body << std::endl;
+
     // ---- ---- check if client is conected ---- ---- //
     if (client->flagResponse->isReading)
         send_data();
@@ -223,11 +225,18 @@ int responseClient::ft_response()
                 // ---- ----  get current root Directory ---- ---- //
                 client->flagResponse->file_RW.close();
                 client->flagResponse->file_RW.open(uri);
+
                 if (client->flagResponse->isLocation && !block_server[nBlock].list_of_location[nbrLocation].cgi_path.empty() 
                     && client->flagResponse->file_RW)
                 {
                     std::cout << "----- CGI -----" << std::endl;
-                    handle_cgi();
+                    std::string currentDe(getcwd(NULL, 256));
+                    int fd = open((currentDe + "/" + block_server[nBlock].list_of_location[nbrLocation].cgi_path).c_str(), O_RDWR);
+                    if (fd < 0)
+                        send_error_status("500");
+                    else
+                        handle_cgi();
+                    close(fd);
                 }
                 // ---- ----  calling Methode needed ---- ---- //
                 else

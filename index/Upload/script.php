@@ -4,7 +4,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-$target_dir = "../../upload/upload";
+$target_dir = "../../upload/upload_cgi/";
 $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
 $uploadOk = 1;
 $fileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
@@ -14,6 +14,8 @@ if (file_exists($target_file)) {
   echo "Sorry, file already exists.";
   $uploadOk = 0;
 }
+
+echo "<img src=\"$fileType\" width=\"100px\" height=\"100px\"\/>";
 
 // Allow certain file formats
 $allowedTypes = array("php", "html", "js", "css", "txt", "pdf", "doc", "docx", "ppt", "pptx", "xls", "xlsx", "jpg", "jpeg", "png", "gif", "mp3", "wav", "mp4", "avi", "mov", "wmv", "flv");

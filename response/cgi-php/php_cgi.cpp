@@ -22,10 +22,6 @@ int responseClient::read_data_from_cgi()
         if (found != std::string::npos)
         {
             found += 4;
-            std::cout << "data ------------------ \n" ;
-            std::cout << found << " $$$"<< tmp_string ;
-
-            std::cout << "\ndata ------------------ \n" ;
             tmp_string = tmp_string.substr(0, found);
             break;
         }
@@ -63,9 +59,12 @@ int    responseClient::handle_cgi()
     // ----- ----- read body request and using in for cgi ----- ----- //
     if (client->request_data_struct->method == "POST")
     {
+        unlink((client->flagResponse->tmp_file.str() + "post").c_str());
+        t_fd[0] = open((client->flagResponse->tmp_file.str() + "post").c_str(), O_RDWR | O_CREAT, 0664 );
         client->flagResponse->file_RW.close();
-        client->flagResponse->file_RW.open((client->flagResponse->tmp_file.str() + "post").c_str());
+        client->flagResponse->file_RW.open((client->flagResponse->tmp_file.str() + "post"));
         client->flagResponse->file_RW << client->request_data_struct->body;
+        close(t_fd[0]);
         t_fd[0] = open((client->flagResponse->tmp_file.str() + "post").c_str(), O_RDONLY);
         client->flagResponse->file_RW.close();
     }
@@ -91,7 +90,7 @@ int    responseClient::handle_cgi()
     aEnv.push_back("REQUEST_METHOD=" + client->request_data_struct->method);
     aEnv.push_back("CONTENT_TYPE=" +  client->request_data_struct->content_Type);
     aEnv.push_back("CONTENT_LENGTH="+ client->request_data_struct->content_Length);
-    // aEnv.push_back("HTTP_COOKIE="+ client->request_data_struct);
+    aEnv.push_back("HTTP_COOKIE="+ client->request_data_struct->cookie);
 
     sysEnv = new char*[aEnv.size() + 1];
     for (size_t i=0; i<aEnv.size(); i++)
@@ -144,6 +143,7 @@ int    responseClient::handle_cgi()
             client->flagResponse->isReading = false;
             client->flagResponse->file_RW.close();
             unlink(client->flagResponse->tmp_file.str().c_str());
+            unlink((client->flagResponse->tmp_file.str() + "post").c_str());
             drop_client(client);
         }
         std::cout << "cgi send" << std::endl;

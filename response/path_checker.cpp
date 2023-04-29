@@ -54,8 +54,7 @@ int responseClient::checkUri(std::string _uri)
 int responseClient::root_directory_if_existe()
 {
     std::vector<std::string> tmp_uriroot;
-    char tmp[256];
-    std::string currentDe(getcwd(tmp, 256));
+    std::string currentDe(getcwd(NULL, 256));
     if (root[root.length() - 1] != '/')
         root = root + "/";
     root = currentDe + "/" + root;

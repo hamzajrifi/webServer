@@ -34,6 +34,8 @@ void pars_request_header(client_info *client)
             client->request_data_struct->transfer_Encoding = temp_split_data[j].substr(ifind + 1);
         else if (temp_split_data[j].compare(0, 14, "Content-Type: ") == 0)
             client->request_data_struct->content_Type = temp_split_data[j].substr(ifind + 1);
+        else if (temp_split_data[j].compare(0, 14, "Cookie: ") == 0)
+            client->request_data_struct->cookie = temp_split_data[j].substr(ifind + 1);
     }
 }
 

@@ -83,7 +83,7 @@ void client_send_recv(client_info *client, ft_fdSet& dataSelect, std::vector<con
             }
             if (client->indice_end_body == 1)
             {
-                just_parce_boundary(client);
+                // just_parce_boundary(client);
                 res_client.client = client;
 		    	res_client.ft_response();
             }

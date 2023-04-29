@@ -14,10 +14,19 @@ int responseClient::check_if_location_matched()
     int i = 0;
     std::string rootLocation;
     nbrLocation = 0;
+
+    found  = 0;
+    while((found = client->request_data_struct->path.find("//")) != std::string::npos)
+    {
+
+        client->request_data_struct->path =  client->request_data_struct->path.erase(found, 1);
+        std::cout << "found " << found << "uri path " << client->request_data_struct->path <<std::endl;
+    }   
+
     for(size_t nLocation = 0; nLocation < block_server[nBlock].list_of_location.size(); nLocation++)
     {
-        // std::cout << "nblock =  " << nLocation << " nlocation " << block_server[nBlock].list_of_location[nLocation].path \
-        // << "path " <<  client->request_data_struct->path << std::endl;
+        
+        
         if (client->request_data_struct->path.find(block_server[nBlock].list_of_location[nLocation].path) != std::string::npos \
             && (client->request_data_struct->path[block_server[nBlock].list_of_location[nLocation].path.length()] == '\0' || \
             client->request_data_struct->path[block_server[nBlock].list_of_location[nLocation].path.length()] == '/'))

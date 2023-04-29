@@ -27,7 +27,7 @@ int	responseClient::error_301()
 int     responseClient::send_error_status(std::string nbStatus)
 {
 	//  error Not Implemented
-	if (!nbStatus.compare("501") || !nbStatus.compare("413") || !nbStatus.compare("403"))
+	if (!nbStatus.compare("501") || !nbStatus.compare("413") || !nbStatus.compare("403") || !nbStatus.compare("500"))
 		return (get_default_error_page(nbStatus));
 	if(!nbStatus.compare("301"))
 		return error_301();
