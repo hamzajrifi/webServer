@@ -18,7 +18,6 @@ int responseClient::send_data()
         client->flagResponse->file_RW.close();
         unlink(client->flagResponse->tmp_file.str().c_str());
         unlink((client->flagResponse->tmp_file.str() + "post").c_str());
-        // std::cout << "file close sending.........." << std::endl;
         drop_client(client);
     }
     return 0;

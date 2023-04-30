@@ -54,11 +54,12 @@ int responseClient::checkUri(std::string _uri)
 int responseClient::root_directory_if_existe()
 {
     std::vector<std::string> tmp_uriroot;
-    std::string currentDe(getcwd(NULL, 256));
+    char *ptr = getcwd(NULL, 256);
+    std::string currentDe(ptr);
+    free(ptr);
     if (root[root.length() - 1] != '/')
         root = root + "/";
     root = currentDe + "/" + root;
-    // std::cout << "root" << root << std::endl;
     char *roma = strtok((char *)root.c_str(), "/");
     while (roma != nullptr)
     {
@@ -76,17 +77,15 @@ int responseClient::root_directory_if_existe()
         else
            ++it;
     }
+
     root.clear();
     for (size_t i = 0; i < tmp_uriroot.size(); i++)
-        {
-            root += "/" + tmp_uriroot[i];
-            // std::cout << " arg = "<< tmp_uriroot[i] << std::endl;
-        }
-    // std::cout << root << std::endl;
+        root += "/" + tmp_uriroot[i];
     root += "/";
     if (root[0] != '/')    
         root = "/" + root;
-        //std::cout << "request path "<< client->request_data_struct->path << "\n "<< std::endl;
-    nbrstatus = checkUri(root + client->request_data_struct->path.substr(1, client->request_data_struct->path.length()));
+    nbrstatus = checkUri(root + client->request_data_struct->path.substr(1));
+
+    
     return nbrstatus;
 }

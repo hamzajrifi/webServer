@@ -35,40 +35,36 @@ int responseClient::execute_cgi_file()
 {
     pid_t pid = fork();
     if (pid == -1) {
-            unlink(client->flagResponse->tmp_file.str().c_str());
         // field fork
+        unlink(client->flagResponse->tmp_file.str().c_str());
         close(cgi_fd[0]);
         close(cgi_fd[1]);
         return 1;
     } 
     else if (pid == 0) {
-        // Child process
+        // cgi process
         dup2(cgi_fd[0], 0);
         dup2(cgi_fd[1], 1);
         close(cgi_fd[0]);
         close(cgi_fd[1]);
         execve(argv[0], argv, sysEnv);
-
-        write(1, "failed1\n", 9);
         exit(1);
     }
     else {
-        // Read output from child process
-
-        ///get conetent lenght file
+        //------ Read output from child process
         int status;
+        // Wait for child process to exit
+        // kill(pid, SIGSEGV);
         waitpid(pid, &status, 0);
 
         delete(sysEnv);
         read_data_from_cgi();
 
         buff.clear();
-        // std::cout << "check content = " << tmp_string.find("Content-Type:")<< std::endl;
         buff  << "HTTP/1.1 " << statusCodes["200"] \
-                // << "\r\nContent-Type: text/html"
-                << "\r\nContent-Length: " << client->flagResponse->content_length \
+                << (tmp_string.find("Content-Type:") > tmp_string.length() ? "text/html\r\n" : "\r\n")\
+                << "Content-Length: " << client->flagResponse->content_length \
                 << "\r\n" << tmp_string;
-                // std::cout << "check header " << buff.str() << std::endl;
         write(client->socket, buff.str().c_str(), buff.str().length());
         if (!client->flagResponse->content_length)
         {
@@ -79,7 +75,6 @@ int responseClient::execute_cgi_file()
             drop_client(client);
         }
         std::cout << "cgi send" << std::endl;
-        // Wait for child process to exit
     }
     return 0;
 }
@@ -97,10 +92,10 @@ std::string& responseClient::pars_cgi_uri()
 int    responseClient::handle_cgi() 
 {
     std::cout << "run cgi scripts " << std::endl;
-    // Create file for communication between parent and child processes
+    // Create file for communication between parent and cgi processes
     client->flagResponse->tmp_file << "../upload/" << rawtime <<  "_cgi_" << client->socket;
 
-    // ----- ----- read body request and using in for cgi ----- ----- //
+    // ----- ----- read body request and using it for cgi ----- ----- //
     if (client->request_data_struct->method == "POST")
     {
         unlink((client->flagResponse->tmp_file.str() + "post").c_str());
@@ -113,16 +108,12 @@ int    responseClient::handle_cgi()
         cgi_fd[0] = open((client->flagResponse->tmp_file.str() + "post").c_str(), O_RDONLY);
         client->flagResponse->file_RW.close();
     }
-    
-
     cgi_fd[1] = open(client->flagResponse->tmp_file.str().c_str(), O_RDWR | O_CREAT, 0664 );
     if (uri.find("?") != std::string::npos)
         pars_cgi_uri();
-
     argv[0] = (char*)block_server[nBlock].list_of_location[nbrLocation].cgi_path.c_str();// check cgi path
     argv[1] = (char *) uri.c_str();
     argv[2] = NULL;
-    ////////////////////////////////////////
     tmp_string = "SCRIPT_FILENAME=";
     tmp_string += argv[1];
     aEnv.push_back("REDIRECT_STATUS=200");
@@ -135,9 +126,7 @@ int    responseClient::handle_cgi()
     sysEnv = new char*[aEnv.size() + 1];
     for (size_t i=0; i<aEnv.size(); i++)
         sysEnv[i] = (char *)aEnv[i].c_str();
-    //////////////////////////////////////////////////
     sysEnv[aEnv.size()] = NULL;
-
 /////----- execute cgi file  
     execute_cgi_file();
 

@@ -221,7 +221,7 @@ int responseClient::ft_response()
                 // ---- ----  get current root Directory ---- ---- //
                 if (root_directory_if_existe())
                     return nbrstatus;
-                
+
                 std::cout << "last uri " << uri << std::endl;
                 //----- ----- check uri if is valid
                 client->flagResponse->file_RW.close();
@@ -231,7 +231,11 @@ int responseClient::ft_response()
                     && client->flagResponse->file_RW)
                 {
                     std::cout << "----- CGI -----" << std::endl;
-                    std::string currentDe(getcwd(NULL, 256));
+                    char *ptr = getcwd(NULL, 256);
+                    if (!ptr)
+                        return send_error_status("500");
+                    std::string currentDe(ptr);
+                    free(ptr);
                     int fd = open((currentDe + "/" + block_server[nBlock].list_of_location[nbrLocation].cgi_path).c_str(), O_RDWR);
                     if (fd < 0)
                         send_error_status("500");
@@ -241,7 +245,11 @@ int responseClient::ft_response()
                 }
                 // ---- ----  calling Methode needed ---- ---- //
                 else
+                {  
                     methodeFunction[client->request_data_struct->method](*this);
+                system("leaks webserver");
+                    
+                    }
 
                 return nbrstatus;
             }
