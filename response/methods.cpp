@@ -55,14 +55,11 @@ int	responseClient::check_method()
 int responseClient::getMethod(responseClient& cl)
 {
     cl.content_type = cl.get_content_type(cl.uri.c_str());
-    std::cout << "type " << cl.content_type  << std::endl;
     cl.client->flagResponse->file_RW.seekg(0, std::ios::end);
     cl.client->flagResponse->content_length = cl.client->flagResponse->file_RW.tellg();
     cl.client->flagResponse->file_RW.seekg(0,std::ios::beg);
-    // cl.client->flagResponse->content_length = cl.client->flagResponse->ifautoIndex ? cl.list_current_directory(cl.uri) : cl.client->flagResponse->content_length;
     if (cl.client->flagResponse->ifautoIndex)
         cl.list_current_directory(cl.uri);
-    std::cout << "data " << cl.client->flagResponse->content_length << std::endl;
     cl.buff << "HTTP/1.1 " << cl.statusCodes["200"] \
                 << "\r\nContent-Type: "  << cl.content_type\
                 << "\r\nContent-Length: " << cl.client->flagResponse->content_length \
@@ -75,18 +72,17 @@ int responseClient::getMethod(responseClient& cl)
         if (write(cl.client->socket, cl.buff2.str().c_str(), cl.buff2.str().length()) < 0)
             std::cout << "write fieled11111 " << std::endl;
 
-    // std::cout << "*-*-*-*-*-*-*-* GET methode *-*-*-*-*-*-*-*" << std::endl;
+    std::cout << "*-*-*-*-*-*-*-* GET methode *-*-*-*-*-*-*-*" << std::endl;
     return 0;
 }
 
 int responseClient::postMethod(responseClient& cl)
 {
     std::cout << "*-*-*-*-*-*-*-* POST method *-*-*-*-*-*-*-*" << std::endl;
-        // std::cout << "data " << cl.client->request_data_struct->body << std::endl;
-    ////check if body is empty
-    // if (!cl.client->request_data_struct->content_Type.length())
-    // {
-        // std::cout  << "POST empty " << std::endl;
+    char ptr[256];
+    cl.tmp_string = getcwd(ptr, 256);
+    if (stat((cl.tmp_string + "/" + cl.block_server[cl.nBlock].upload_file + "/").c_str(), &cl.info) != 0)
+        return cl.send_error_status("500");
         cl.buff << "HTTP/1.1 " << cl.statusCodes["201"] \
                 << "\r\nContent-Type: "  << "text/plain"\
                 << "\r\nContent-Length: " << "7" \
@@ -94,14 +90,12 @@ int responseClient::postMethod(responseClient& cl)
                 << "\r\nCreated";
         write(cl.client->socket, cl.buff.str().c_str(), cl.buff.str().length());
         cl.client->flagResponse->isReading = false;
-    // 	return 201;
-    // }
+
     //// check data conetent type request and Create and open a file
     std::stringstream nameFile ;
-    nameFile <<  "../upload/Up_" << cl.rawtime << nbrDataUpload << get_lastEnd_content_type(cl.client->request_data_struct->content_Type.c_str());
+    nameFile << cl.block_server[cl.nBlock].upload_file << "/Up_" << get_current_time('m') << get_lastEnd_content_type(cl.client->request_data_struct->content_Type.c_str());
       std::ofstream PostFile(nameFile.str());
-    nbrDataUpload++;
-      // Write to the file
+      // Write in to the file
       PostFile << cl.client->request_data_struct->body;
       PostFile.close();
         drop_client(cl.client);

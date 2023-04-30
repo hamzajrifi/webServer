@@ -1,7 +1,5 @@
 #include "response.hpp"
 
-int responseClient::nbrDataUpload = 0;
-
 const char *responseClient::get_content_type(const char* path) 
 {
     const char *last_dot = strrchr(path, '.');
@@ -60,9 +58,8 @@ size_t	responseClient::list_current_directory(std::string _uri)
     struct dirent* direntp;
     
     dirp = opendir( _uri.c_str() );
-    if( dirp == NULL ) {
-        // perror( "can't open /home/fred" );
-    } else {
+    if (dirp)
+    {
         buff2 << "<!DOCTYPE html> \
                 <html> \
                     <head><style>h1 {text-align: center;}</style></head> \
@@ -181,8 +178,6 @@ responseClient::responseClient(std::vector<config_file> &blockServer):block_serv
 
 int responseClient::ft_response()
 {
-        std::cout << "body " <<client->request_data_struct->body << std::endl;
-
     // ---- ---- check if client is conected ---- ---- //
     if (client->flagResponse->isReading)
         send_data();
@@ -191,7 +186,6 @@ int responseClient::ft_response()
         return (send_error_status(client->request_data_struct->nbrStatus.c_str()));
     else
     {
-        time (&rawtime);
         client->flagResponse->isReading = true;
         // ---- ----  check server block ---- ---- //
         int sfind = client->request_data_struct->host.find(":");
@@ -217,12 +211,10 @@ int responseClient::ft_response()
                     noLocation();
                 else if (check_if_location_matched())
                     return nbrstatus;
-                std::cout << "last uri " << uri << std::endl;
                 // ---- ----  get current root Directory ---- ---- //
                 if (root_directory_if_existe())
                     return nbrstatus;
 
-                std::cout << "last uri " << uri << std::endl;
                 //----- ----- check uri if is valid
                 client->flagResponse->file_RW.close();
                 client->flagResponse->file_RW.open(uri);
@@ -245,12 +237,7 @@ int responseClient::ft_response()
                 }
                 // ---- ----  calling Methode needed ---- ---- //
                 else
-                {  
                     methodeFunction[client->request_data_struct->method](*this);
-                system("leaks webserver");
-                    
-                    }
-
                 return nbrstatus;
             }
             else if (nServer == block_server.size() - 2)

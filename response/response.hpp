@@ -11,7 +11,7 @@
 #include <unistd.h>
 #include <time.h>
 
-#define BSIZE 9024
+#define BSIZE 1024
 struct client_info;
 struct config_file;
 
@@ -39,6 +39,7 @@ class  responseClient{
     std::string content_type;
     size_t      centenet_lenght;
     size_t      found;
+    struct stat info;
     std::vector<std::string> aEnv;
     ///
     char        *mediaType;
@@ -54,8 +55,7 @@ class  responseClient{
 
     std::map<std::string, int (*)(responseClient&)> methodeFunction;
     std::map<std::string, std::string> statusCodes;
-    /// time  
-    time_t rawtime;
+
     /// file 
     std::stringstream buff; 
     std::stringstream buff2; 
@@ -66,7 +66,6 @@ class  responseClient{
     static int  getMethod(responseClient&);
     static int  postMethod(responseClient&);
     static int  deleteMethod(responseClient&);
-    static int  nbrDataUpload;
     int         ft_response();
     int         noLocation();
     int         check_if_location_matched();
@@ -87,8 +86,7 @@ class  responseClient{
     std::string&    pars_cgi_uri();
 };
 
-
-char	*ft_strjoin(const char *s1, const char *s2);
 //// utils.cpp
+size_t	get_current_time(char c);
 
 #endif

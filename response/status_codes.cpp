@@ -31,6 +31,7 @@ int     responseClient::send_error_status(std::string nbStatus)
 		return (get_default_error_page(nbStatus));
 	if(!nbStatus.compare("301"))
 		return error_301();
+		std::cout << "uri error  " << root + block_server[nBlock].error_page_kv[nbStatus] << std::endl;
 	client->flagResponse->file_RW.open(root + block_server[nBlock].error_page_kv[nbStatus], std::ios::in);
 	if (!client->flagResponse->file_RW || block_server[nBlock].error_page_kv[nbStatus].empty())
 		get_default_error_page(nbStatus);

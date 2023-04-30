@@ -2,15 +2,13 @@
 
 int responseClient::checkUri(std::string _uri)
 {
-    struct stat info;
-
     // std::cout << "********** =>>> path = [" << _uri << "] <<<= **********\n" << std::endl;
     //check path if cgi uri
     uri = _uri;
     if (client->flagResponse->isLocation && !block_server[nBlock].list_of_location[nbrLocation].cgi_path.empty() 
                     && _uri.find("?") != std::string::npos)
                    _uri = pars_cgi_uri();
-    if (stat(_uri.c_str(), &info) != 0)/// add flag cgi 
+    if (stat(_uri.c_str(), &info) != 0)
     {
         std::cout << "path not valid" << std::endl;   
        return send_error_status("404");
@@ -19,7 +17,7 @@ int responseClient::checkUri(std::string _uri)
     {
         std::cout << "path valid !" << std::endl;
         client->flagResponse->file_RW.open(_uri);
-        if (!client->flagResponse->file_RW)
+        if (!client->flagResponse->file_RW && client->request_data_struct->method != "POST")
         {
             std::cout << " _uri not file !  " <<  _uri  << std::endl;
             if (client->flagResponse->ifautoIndex)

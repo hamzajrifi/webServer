@@ -40,6 +40,7 @@ struct config_file
     std::map <std::string, std::string> error_page_kv;
     std::string client_max_body_size;
     size_t  max_number;
+    std::string fastcgi_read_timeout;
     std::string allow_method;
     std::vector<location_struct> list_of_location;
     std::string upload_file;

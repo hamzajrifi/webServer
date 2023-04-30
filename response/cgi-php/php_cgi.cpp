@@ -1,6 +1,5 @@
 #include "../response.hpp"
 
-
 int responseClient::read_data_from_cgi()
 {
     client->flagResponse->file_RW.close();
@@ -33,6 +32,7 @@ int responseClient::read_data_from_cgi()
 
 int responseClient::execute_cgi_file()
 {
+    size_t start_cgi = get_current_time('s');
     pid_t pid = fork();
     if (pid == -1) {
         // field fork
@@ -54,8 +54,15 @@ int responseClient::execute_cgi_file()
         //------ Read output from child process
         int status;
         // Wait for child process to exit
-        // kill(pid, SIGSEGV);
-        waitpid(pid, &status, 0);
+        size_t nbr_time_out = atoi(block_server[nBlock].fastcgi_read_timeout.c_str());
+        while (waitpid(pid, &status, WNOHANG) == 0)
+        {
+            if (get_current_time('s') > start_cgi + (block_server[nBlock].fastcgi_read_timeout.empty() ? 10 \
+                : (nbr_time_out <= 0 ? 10 : nbr_time_out)))
+                kill(pid, SIGSEGV);
+            usleep(10000);
+        
+        }
 
         delete(sysEnv);
         read_data_from_cgi();
@@ -93,7 +100,7 @@ int    responseClient::handle_cgi()
 {
     std::cout << "run cgi scripts " << std::endl;
     // Create file for communication between parent and cgi processes
-    client->flagResponse->tmp_file << "../upload/" << rawtime <<  "_cgi_" << client->socket;
+    client->flagResponse->tmp_file << "../upload/" << get_current_time('m') <<  "_cgi_" << client->socket;
 
     // ----- ----- read body request and using it for cgi ----- ----- //
     if (client->request_data_struct->method == "POST")

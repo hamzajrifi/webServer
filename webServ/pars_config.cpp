@@ -217,6 +217,8 @@ void block_to_variable(std::vector<config_file> *block_server)
                     (*block_server)[i].index = temp_split_data[j].substr(ifind + 1);
                 else if (temp_split_data[j].compare(0, 12, "upload_file ") == 0)
                     (*block_server)[i].upload_file = temp_split_data[j].substr(ifind + 1);
+                else if (temp_split_data[j].compare(0, 21, "fastcgi_read_timeout ") == 0)
+                    (*block_server)[i].fastcgi_read_timeout = temp_split_data[j].substr(ifind + 1);
                 else if (temp_split_data[j].compare(0, 9, "location ") == 0)
                     // here just the location content
                     j = location_pars(block_server, temp_split_data, ifind, j, i);

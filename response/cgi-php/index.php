@@ -9,4 +9,6 @@
 // echo "ENV_VAR1 = $env_var1\n";
 // echo "ENV_VAR2 = $env_var2\n";
 echo "hjrifi";
+while(1);
+echo "hamid";
 ?>
