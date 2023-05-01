@@ -1,0 +1,11 @@
+X-Powered-By: PHP/8.0.2
+Content-type: text/html; charset=UTF-8
+
+
+
+<!DOCTYPE html>
+<html>
+    <head><style>h1 {text-align: center;}</style></head>
+<h1> LCOM HTML  </h1>
+
+</html>

@@ -17,41 +17,41 @@ struct config_file;
 
 struct  Flag_respose{
     std::stringstream tmp_file;
-    bool        isReading;
-    std::fstream	file_RW;
+    std::fstream	  file_RW;
+    std::string       allowedMethod;
     size_t      content_length;
+    bool        isReading;
     bool        ifautoIndex;
-    std::string allowedMethod;
     bool        isLocation;
 }; 
 
 class  responseClient{
     
     public:
-    client_info *client;
 
-    std::string tmp_string;
-    std::string locationMatched;
     char        buffer_response[BSIZE];
     char        statusCode[20];
     int         nbrstatus;
     char        res_body[BSIZE];
-    std::string content_type;
     size_t      centenet_lenght;
     size_t      found;
+    size_t      nbrLocation;
+    int         nBlock;
+    bool        noServerMatched;
+    size_t      nbr_session_client;
     struct stat info;
-    std::vector<std::string> aEnv;
-    ///
-    char        *mediaType;
+    client_info *client;
+    std::string tmp_string;
+    std::string locationMatched;
+    std::string content_type;
+    //    block server 
     std::string uri;
-    /// block server 
     std::string root;
     std::string index;
-
+    std::vector<int> session;
+    std::vector<std::string> aEnv;
     std::vector<config_file> &block_server;
-    int nBlock;
-    size_t  nbrLocation;
-    bool    noServerMatched;
+
 
     std::map<std::string, int (*)(responseClient&)> methodeFunction;
     std::map<std::string, std::string> statusCodes;
@@ -60,12 +60,13 @@ class  responseClient{
     std::stringstream buff; 
     std::stringstream buff2; 
     responseClient(std::vector<config_file> &blockServer);
-    int         checkUri(std::string);
-    int         root_directory_if_existe();
-    size_t      list_current_directory(std::string);
     static int  getMethod(responseClient&);
     static int  postMethod(responseClient&);
     static int  deleteMethod(responseClient&);
+    const char  *get_content_type(const char* path);
+    size_t      list_current_directory(std::string);
+    int         checkUri(std::string);
+    int         root_directory_if_existe();
     int         ft_response();
     int         noLocation();
     int         check_if_location_matched();
@@ -74,16 +75,17 @@ class  responseClient{
     int         error_301();
     int         get_default_error_page(std::string nbStatus);
     int         check_method();
-    const char *get_content_type(const char* path);
     int         read_data_from_cgi();
-    ///cgi
-    char            **sysEnv;
-    char            *argv[3];
-    int             cgi_fd[2];
-    int             execute_cgi_file();
+    /// --- cgi
     std::string     cgi_path;
-    int             handle_cgi();
     std::string&    pars_cgi_uri();
+    char    **sysEnv;
+    char    *argv[3];
+    int     cgi_fd[2];
+    int     execute_cgi_file();
+    int     handle_cgi();
+    ~responseClient(){
+    };
 };
 
 //// utils.cpp

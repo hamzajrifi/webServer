@@ -37,9 +37,8 @@ void drop_client(struct client_info *client)
         {
             *p = client->next;
             delete(client->flagResponse);
-            free((char *)client->data.c_str());
-            free(client->request_data_struct);
-            free(client);
+            delete (client->request_data_struct);
+            delete (client);
             return;
         }
         p = &(*p)->next;

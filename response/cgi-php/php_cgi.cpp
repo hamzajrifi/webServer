@@ -130,9 +130,17 @@ int    responseClient::handle_cgi()
     aEnv.push_back("CONTENT_LENGTH="+ client->request_data_struct->content_Length);
     aEnv.push_back("HTTP_COOKIE="+ client->request_data_struct->cookie);
 
+    if ((found = client->request_data_struct->cookie.find("session") == std::string::npos
+        && (client->request_data_struct->cookie[found] == '?' 
+            || client->request_data_struct->cookie[found] == '&')))
+        session.push_back(nbr_session_client++);
+    
     sysEnv = new char*[aEnv.size() + 1];
     for (size_t i=0; i<aEnv.size(); i++)
-        sysEnv[i] = (char *)aEnv[i].c_str();
+    {
+       sysEnv[i] = (char *)aEnv[i].c_str();
+        std::cout << "ss == " << sysEnv[i] << std::endl;
+    }
     sysEnv[aEnv.size()] = NULL;
 /////----- execute cgi file  
     execute_cgi_file();
