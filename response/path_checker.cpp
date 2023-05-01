@@ -26,7 +26,7 @@ int responseClient::checkUri(std::string _uri)
                 uri = _uri;
                 return 0;
             }
-            else if (block_server[nBlock].list_of_location[nbrLocation].index.empty())
+            else if (index.empty())
                 return send_error_status("403");
             if (!client->request_data_struct->method.find("DELETE"))
                 return send_error_status("409");

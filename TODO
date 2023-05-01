@@ -1,25 +1,4 @@
-DNS
 
-///////////////////////////////////////
-
-
-check method if existe uppercase and lowercase // check if get and post and delete is allowed
-
-protecte all map initialition ---> add exceptions
-
-code status in get_methode()
-
-int use = 1;
-    setsockopt(fd_server,SOL_SOCKET,SO_REUSEADDR, &use,sizeof(use));
-
-
-
-/////
-
-asking about networking
 location folders upload 
 check permition file and folder
-
-
-
-
+error pages

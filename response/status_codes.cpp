@@ -7,7 +7,7 @@ int     responseClient::get_default_error_page(std::string nbStatus)
 		<< "\r\nContent-Type: text/html" \
 		<< "\r\n\r\n<!DOCTYPE html><html><head><style>h1 {text-align: center;}</style></head><body><h1>Error " \
 		<< nbStatus << "</h1></body></html>";
-	write(client->socket, &buff.str()[0], buff.str().length());
+	sendHeader(client->socket, &buff.str()[0], buff.str().length());
 	client->flagResponse->isReading = false;
 	drop_client(client);
 	return 1;
@@ -16,16 +16,22 @@ int     responseClient::get_default_error_page(std::string nbStatus)
 int	responseClient::error_301()
 {
 	std::cout << "jsut inside 301" << std::endl;
+	
 	buff 	<< "HTTP/1.1 301 Moved Permanently \r\nLocation: " \
-			<< index;
-	write(client->socket, &buff.str()[0], buff.str().length());
-	client->flagResponse->isReading = false;
+			<< index << "\r\n";
+	
+	std::cout << buff.str() << std::endl;
+	
+	if (sendHeader(client->socket, &buff.str()[0], buff.str().length()))
+		return -1;
+	std::cout <<"socket = " << client->socket << std::endl;
 	drop_client(client);
 	return 301;
 }
 
 int     responseClient::send_error_status(std::string nbStatus)
 {
+	std::cout << "error pages == " << nbStatus << std::endl;
 	//  error Not Implemented
 	if (!nbStatus.compare("501") || !nbStatus.compare("413") || !nbStatus.compare("403") || !nbStatus.compare("500"))
 		return (get_default_error_page(nbStatus));
@@ -47,8 +53,8 @@ int     responseClient::send_error_status(std::string nbStatus)
 				<< "\r\nContent-Type: "  << content_type \
 				<< "\r\n\r\n";
 
-		if (write(client->socket, &buff.str()[0], buff.str().length()) < 0)
-    		std::cout << "write fieled444444444 " << std::endl;
+		if (sendHeader(client->socket, &buff.str()[0], buff.str().length()) < 0)
+    		return -1;
 	}
 	nbrstatus = atoi(nbStatus.c_str());
 	return nbrstatus;

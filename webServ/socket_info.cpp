@@ -16,20 +16,20 @@ int create_socket(const char* host, const char* port)
     socket_listen = socket(bind_address->ai_family, bind_address->ai_socktype, bind_address->ai_protocol);
     if (!(socket_listen >= 0))
     {
-        std::cout << "socket() failed. " << errno << std::endl;
+        std::cout << "socket() failed. " << std::endl;
         exit (1);
     }
     std::cout << "Binding socket to local address..." << std::endl;
     if (bind(socket_listen, bind_address->ai_addr, bind_address->ai_addrlen))
     {
-        std::cout << "bind() function failed." << errno << std::endl;
+        std::cout << "bind() function failed." << std::endl;
         exit(1);
     }
     freeaddrinfo(bind_address);
     std::cout << "listeing..." << std::endl;
     if (listen(socket_listen, 200) < 0)
     {
-        std::cout << "listen() failed." << errno << std::endl;
+        std::cout << "listen() failed." << std::endl;
         exit(1);
     }
     return socket_listen;

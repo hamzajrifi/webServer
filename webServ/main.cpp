@@ -80,7 +80,7 @@ fd_set wait_on_clients(std::vector<int> server_socket, ft_fdSet&  dataSelect)
     //---------------------
     if (select(max_socket + 1, &dataSelect.reads, &dataSelect.write, 0, 0) < 0)
     {
-        std::cout << "select() failed." << errno << std::endl;
+        std::cout << "select() failed." << std::endl;
         exit (1);
     }
     return dataSelect.reads;
@@ -92,7 +92,6 @@ int main(int argc, char **argv)
     {
         signal(SIGPIPE, SIG_IGN);
         std::vector<config_file> block_server = pars_confile(argv[1]);// just i pars the config file
-        std::cout << block_server[0].upload_file << std::endl;
         //print_block_server(block_server);
         unsigned long i = 0;
         std::vector<int> server;
@@ -124,7 +123,7 @@ int main(int argc, char **argv)
 
                     if (!(client->socket >= 0))
                     {
-                        std::cout << "accept() failed. " << errno << std::endl;
+                        std::cout << "accept() failed. " << std::endl;
                         return 1;
                     }
                     std::cout << "New connection from localhost>>>> ." << server[i] << std::endl;

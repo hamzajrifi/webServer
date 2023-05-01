@@ -1,17 +1,22 @@
 #include "response.hpp"
 
+int responseClient::sendHeader(int socket, const char *str, size_t length)
+{
+    if (write(socket, str, length) < 0)
+    {
+        drop_client(client);
+        return -1;
+    }
+    return 0;
+}
+
+
 int responseClient::send_data()
 {
-    std::cout << "sending .... " << std::endl;
-    // std::cout << "fd = " << client->socket << " content lenght : " << client->flagResponse->content_length << std::endl;
-    
     memset(res_body, 0, BSIZE);
     client->flagResponse->file_RW.read(res_body, BSIZE);
-    // std::cout << "body data = " << client->socket << " [][] " << res_body << std::endl;
-
-    if (write(client->socket, res_body, client->flagResponse->file_RW.gcount()) < 0)
-        std::cout << "write error" << std::endl;
-
+    if (sendHeader(client->socket, res_body, client->flagResponse->file_RW.gcount()) < 0)
+        return -1;
     if (client->flagResponse->file_RW.gcount() == 0)
     {
         client->flagResponse->isReading = false;

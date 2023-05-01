@@ -13,6 +13,7 @@ const char *get_lastEnd_content_type(const char* type)
         if (strcmp(type, "image/svg+xml") == 0) return ".svg";
         if (strcmp(type, "video/mp4") == 0) return ".mp4";
         if (strcmp(type, "text/plain") == 0) return ".txt";
+        if (strcmp(type, "plain/text") == 0) return ".txt";
         if (strcmp(type, "application/pdf") == 0) return ".pdf";
         if (strcmp(type, "image/jpeg") == 0) return ".jpeg" ;
         if (strcmp(type, "application/json") == 0) return ".json" ;
@@ -66,55 +67,61 @@ int responseClient::getMethod(responseClient& cl)
                 << "\r\nConnection: close\r\n"\
                 << "\r\n";
 
-    if (write(cl.client->socket, cl.buff.str().c_str(), cl.buff.str().length()) < 0)
-        std::cout << "write fieled222222222 " << std::endl;
+    if (cl.sendHeader(cl.client->socket, cl.buff.str().c_str(), cl.buff.str().length()))
+            return -1;
     if (cl.client->flagResponse->ifautoIndex)
-        if (write(cl.client->socket, cl.buff2.str().c_str(), cl.buff2.str().length()) < 0)
-            std::cout << "write fieled11111 " << std::endl;
-
-    std::cout << "*-*-*-*-*-*-*-* GET methode *-*-*-*-*-*-*-*" << std::endl;
+        if (cl.sendHeader(cl.client->socket, cl.buff2.str().c_str(), cl.buff2.str().length()))
+            return -1;
     return 0;
 }
 
 int responseClient::postMethod(responseClient& cl)
 {
-    std::cout << "*-*-*-*-*-*-*-* POST method *-*-*-*-*-*-*-*" << std::endl;
     char ptr[256];
     cl.tmp_string = getcwd(ptr, 256);
-    if (stat((cl.tmp_string + "/" + cl.block_server[cl.nBlock].upload_file + "/").c_str(), &cl.info) != 0)
+    if (cl.block_server[cl.nBlock].upload_file.empty())
+        cl.block_server[cl.nBlock].upload_file = cl.tmp_string + "/public/upload";
+    else
+        cl.block_server[cl.nBlock].upload_file = cl.tmp_string + "/" + cl.block_server[cl.nBlock].upload_file + "/";
+    if (stat((cl.block_server[cl.nBlock].upload_file).c_str(), &cl.info) != 0)
         return cl.send_error_status("500");
         cl.buff << "HTTP/1.1 " << cl.statusCodes["201"] \
                 << "\r\nContent-Type: "  << "text/plain"\
                 << "\r\nContent-Length: " << "7" \
                 << "\r\nConnection: close\r\n"\
                 << "\r\nCreated";
-        write(cl.client->socket, cl.buff.str().c_str(), cl.buff.str().length());
-        cl.client->flagResponse->isReading = false;
+    if (cl.sendHeader(cl.client->socket, cl.buff.str().c_str(), cl.buff.str().length()))
+        return -1;
 
     //// check data conetent type request and Create and open a file
     std::stringstream nameFile ;
-    nameFile << cl.block_server[cl.nBlock].upload_file << "/Up_" << get_current_time('m') << get_lastEnd_content_type(cl.client->request_data_struct->content_Type.c_str());
-      std::ofstream PostFile(nameFile.str());
-      // Write in to the file
-      PostFile << cl.client->request_data_struct->body;
-      PostFile.close();
-        drop_client(cl.client);
-    cl.client->flagResponse->isReading = false;
+
+    nameFile << cl.block_server[cl.nBlock].upload_file << "/Up_" << cl.get_current_time('m') << get_lastEnd_content_type(cl.client->request_data_struct->content_Type.c_str());
+    std::ofstream PostFile(nameFile.str());
+    std::cout << "file name "<< cl.client->request_data_struct->content_Type <<std::endl;
+    // Write in to the file
+    PostFile << cl.client->request_data_struct->body;
+    PostFile.close();
+    drop_client(cl.client);
     return 0;
 }
 
 int responseClient::deleteMethod(responseClient& cl)
 {
     std::cout << "DELETE methode" << " \n URI = " << cl.client->request_data_struct->path << std::endl;
-    cl.client->request_data_struct->path = "../" + cl.client->request_data_struct->path;
-    if (remove(cl.client->request_data_struct->path.c_str()))
-        std::cout << "can't remove " << std::endl;
+    cl.client->request_data_struct->path = cl.client->request_data_struct->path;
+
+    cl.tmp_string = cl.root + cl.client->request_data_struct->path;
+
+    if (remove(cl.tmp_string.c_str()))
+        std::cout << "can't remove " << cl.tmp_string << std::endl;
     cl.buff << "HTTP/1.1 " << cl.statusCodes["202"] \
                 << "\r\nContent-Type: "  << "text/plain"\
                 << "\r\nContent-Length: " << "7" \
                 << "\r\nConnection: close\r\n"\
                 << "\r\nDeleted";
-        write(cl.client->socket, cl.buff.str().c_str(), cl.buff.str().length());
         cl.client->flagResponse->isReading = false;
+    if (cl.sendHeader(cl.client->socket, cl.buff.str().c_str(), cl.buff.str().length()))
+        return -1;
     return 0;
 }

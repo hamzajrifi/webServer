@@ -1,4 +1,0 @@
-X-Powered-By: PHP/8.0.2
-Content-type: text/html; charset=UTF-8
-
-<html><head><title>Greetings</title></head><body><h1>Please enter your name.</h1><form method="GET" action="phpCookie.php">Name: <input type="text" name="name"><input type="submit" value="Submit"></form><h1>Please enter your login.</h1><form method="GET" action="phpCookie.php">Name: <input type="text" name="name"><input type="submit" value="Submit"></form></body></html>

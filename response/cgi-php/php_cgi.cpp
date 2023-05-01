@@ -72,7 +72,8 @@ int responseClient::execute_cgi_file()
                 << (tmp_string.find("Content-Type:") > tmp_string.length() ? "text/html\r\n" : "\r\n")\
                 << "Content-Length: " << client->flagResponse->content_length \
                 << "\r\n" << tmp_string;
-        write(client->socket, buff.str().c_str(), buff.str().length());
+        if (sendHeader(client->socket, buff.str().c_str(), buff.str().length()))
+            return -1;
         if (!client->flagResponse->content_length)
         {
             client->flagResponse->isReading = false;
@@ -100,7 +101,7 @@ int    responseClient::handle_cgi()
 {
     std::cout << "run cgi scripts " << std::endl;
     // Create file for communication between parent and cgi processes
-    client->flagResponse->tmp_file << "../upload/" << get_current_time('m') <<  "_cgi_" << client->socket;
+    client->flagResponse->tmp_file << "/tmp/" << get_current_time('m') <<  "_cgi_" << client->socket;
 
     // ----- ----- read body request and using it for cgi ----- ----- //
     if (client->request_data_struct->method == "POST")

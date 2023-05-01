@@ -31,34 +31,35 @@ class  responseClient{
 
     char        buffer_response[BSIZE];
     char        statusCode[20];
-    int         nbrstatus;
     char        res_body[BSIZE];
+    bool        noServerMatched;
+    int         nbrstatus;
+    int         nBlock;
     size_t      centenet_lenght;
     size_t      found;
     size_t      nbrLocation;
-    int         nBlock;
-    bool        noServerMatched;
     size_t      nbr_session_client;
+
     struct stat info;
     client_info *client;
     std::string tmp_string;
     std::string locationMatched;
     std::string content_type;
-    //    block server 
     std::string uri;
     std::string root;
     std::string index;
-    std::vector<int> session;
+    bool        is_redi;
+    bool        is_method_allowed;
+
+    std::stringstream   buff; 
+    std::stringstream   buff2; 
+    std::vector<int>    session;
     std::vector<std::string> aEnv;
     std::vector<config_file> &block_server;
-
 
     std::map<std::string, int (*)(responseClient&)> methodeFunction;
     std::map<std::string, std::string> statusCodes;
 
-    /// file 
-    std::stringstream buff; 
-    std::stringstream buff2; 
     responseClient(std::vector<config_file> &blockServer);
     static int  getMethod(responseClient&);
     static int  postMethod(responseClient&);
@@ -75,20 +76,21 @@ class  responseClient{
     int         error_301();
     int         get_default_error_page(std::string nbStatus);
     int         check_method();
-    int         read_data_from_cgi();
+    int         sendHeader(int socket, const char *str, size_t length);
     /// --- cgi
     std::string     cgi_path;
     std::string&    pars_cgi_uri();
     char    **sysEnv;
     char    *argv[3];
     int     cgi_fd[2];
+    size_t	get_current_time(char c);
+    int     read_data_from_cgi();
     int     execute_cgi_file();
     int     handle_cgi();
+
     ~responseClient(){
     };
 };
 
-//// utils.cpp
-size_t	get_current_time(char c);
 
 #endif

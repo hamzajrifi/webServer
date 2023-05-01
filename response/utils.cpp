@@ -1,7 +1,7 @@
 #include "response.hpp"
 # include <sys/time.h>
 
-size_t	get_current_time(char tmp)
+size_t	responseClient::get_current_time(char tmp)
 {
 	struct timeval	tv;
 

@@ -21,8 +21,6 @@ int responseClient::check_if_location_matched()
 
     for(size_t nLocation = 0; nLocation < block_server[nBlock].list_of_location.size(); nLocation++)
     {
-        
-        
         if (client->request_data_struct->path.find(block_server[nBlock].list_of_location[nLocation].path) != std::string::npos \
             && (client->request_data_struct->path[block_server[nBlock].list_of_location[nLocation].path.length()] == '\0' || \
             client->request_data_struct->path[block_server[nBlock].list_of_location[nLocation].path.length()] == '/'))
@@ -32,16 +30,22 @@ int responseClient::check_if_location_matched()
             if (!i++ || (block_server[nBlock].list_of_location.size() > 1 && nLocation > 0 
             && lenPathLocation <= block_server[nBlock].list_of_location[nLocation].path.length()))
             {
+                is_method_allowed = false;
+                is_redi = false;
                 nbrLocation = nLocation;
                 locationMatched = block_server[nBlock].list_of_location[nLocation].path;
                 if (!block_server[nBlock].list_of_location[nLocation].allow_method.empty() && check_method())
-                    return send_error_status("405");
+                {
+                    is_method_allowed = false;
+                    continue;
+                }
                 if (!block_server[nBlock].list_of_location[nLocation].autoindex.find("on"))
                     client->flagResponse->ifautoIndex = true;
                 if (!block_server[nBlock].list_of_location[nLocation].returno.empty())
                 {
                     index = block_server[nBlock].list_of_location[nLocation].returno;
-                    return send_error_status("301");
+                    is_redi = true;
+                    continue;
                 }
                     // std::cout << "root " << block_server[nBlock].list_of_location[nLocation].returno << std::endl;
                 if (block_server[nBlock].list_of_location[nLocation].index[0] == '/')
@@ -52,6 +56,12 @@ int responseClient::check_if_location_matched()
                             , client->request_data_struct->path.length());
             }
         }
+    }
+    if (is_method_allowed)
+        return send_error_status("405");
+    if (is_redi)
+    {
+        return send_error_status("301");
     }
     if (i)
         client->request_data_struct->path = rootLocation.length() == 0 ? "/" : rootLocation ;
