@@ -2,27 +2,20 @@
 
 int responseClient::checkUri(std::string _uri)
 {
-    // std::cout << "********** =>>> path = [" << _uri << "] <<<= **********\n" << std::endl;
     //check path if cgi uri
     uri = _uri;
     if (client->flagResponse->isLocation && !block_server[nBlock].list_of_location[nbrLocation].cgi_path.empty() 
                     && _uri.find("?") != std::string::npos)
                    _uri = pars_cgi_uri();
     if (stat(_uri.c_str(), &info) != 0)
-    {
-        std::cout << "path not valid" << std::endl;   
        return send_error_status("404");
-    }
     else
     {
-        std::cout << "path valid !" << std::endl;
         client->flagResponse->file_RW.open(_uri);
         if (!client->flagResponse->file_RW && client->request_data_struct->method != "POST")
         {
-            std::cout << " _uri not file !  " <<  _uri  << std::endl;
             if (client->flagResponse->ifautoIndex)
             {
-                std::cout << "inside uri " << std::endl;
                 uri = _uri;
                 return 0;
             }
@@ -35,12 +28,8 @@ int responseClient::checkUri(std::string _uri)
                 && block_server[nBlock].index[0] != '/')
                     index = "/" + index;
             client->flagResponse->file_RW.open(_uri + index);
-
             if (!client->flagResponse->file_RW)
-            {
-                std::cout << " file not valid !  " <<  _uri + index << std::endl;
                 return send_error_status("404");
-            }
             uri = _uri + index;
         }
         else
@@ -83,7 +72,5 @@ int responseClient::root_directory_if_existe()
     if (root[0] != '/')    
         root = "/" + root;
     nbrstatus = checkUri(root + client->request_data_struct->path.substr(1));
-
-    
     return nbrstatus;
 }

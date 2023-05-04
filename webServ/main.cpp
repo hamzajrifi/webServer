@@ -19,6 +19,7 @@ struct client_info *get_client(int s)
         std::cout << "Out of memory." << std::endl;
         exit(1);
     }
+
     newclient->indice_header = 1;
     newclient->indice_end_body = 0;
     newclient->next = clients;
@@ -54,6 +55,7 @@ fd_set wait_on_clients(std::vector<int> server_socket, ft_fdSet&  dataSelect)
     unsigned long i = 0;
     while (i < server_socket.size())
     {
+
         FD_SET(server_socket[i], &dataSelect.reads);
         i++;
     }
@@ -105,13 +107,12 @@ int main(int argc, char **argv)
         }
         while (1)
         {
-            fd_set reads;
             ft_fdSet dataSelect;
-            reads = wait_on_clients(server, dataSelect);
+            wait_on_clients(server, dataSelect);
             i = 0;
             while (i < block_size - 1)//just a chkeck for new connection for every lisenner
             {
-                if (FD_ISSET(server[i], &reads))//new connection has been detected
+                if (FD_ISSET(server[i], &dataSelect.reads))//new connection has been detected
                 {
                     struct client_info *client = get_client(-1);
                     client->flagResponse = new Flag_respose;
@@ -120,7 +121,6 @@ int main(int argc, char **argv)
         			client->flagResponse->isLocation = false;
 
                     client->socket = accept(server[i], nullptr, nullptr);
-
                     if (!(client->socket >= 0))
                     {
                         std::cout << "accept() failed. " << std::endl;
@@ -128,7 +128,7 @@ int main(int argc, char **argv)
                     }
                     std::cout << "New connection from localhost>>>> ." << server[i] << std::endl;
                 }
-                i++;
+               i++;
             }
             //client sending data
             struct client_info *client = clients;

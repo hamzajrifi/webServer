@@ -24,6 +24,8 @@ struct location_struct
     std::string returno;
     std::string autoindex;
     std::string cgi_path;
+    std::string upload_file;
+    std::string upload_redi;
 };
 
 struct config_file

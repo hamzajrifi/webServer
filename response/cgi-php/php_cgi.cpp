@@ -33,15 +33,15 @@ int responseClient::read_data_from_cgi()
 int responseClient::execute_cgi_file()
 {
     size_t start_cgi = get_current_time('s');
-    pid_t pid = fork();
-    if (pid == -1) {
+    client->flagResponse->pid = fork();
+    if (client->flagResponse->pid == -1) {
         // field fork
         unlink(client->flagResponse->tmp_file.str().c_str());
         close(cgi_fd[0]);
         close(cgi_fd[1]);
         return 1;
     } 
-    else if (pid == 0) {
+    else if (client->flagResponse->pid == 0) {
         // cgi process
         dup2(cgi_fd[0], 0);
         dup2(cgi_fd[1], 1);
@@ -55,21 +55,19 @@ int responseClient::execute_cgi_file()
         int status;
         // Wait for child process to exit
         size_t nbr_time_out = atoi(block_server[nBlock].fastcgi_read_timeout.c_str());
-        while (waitpid(pid, &status, WNOHANG) == 0)
+        while (waitpid(client->flagResponse->pid, &status, WNOHANG) == 0)
         {
             if (get_current_time('s') > start_cgi + (block_server[nBlock].fastcgi_read_timeout.empty() ? 10 \
                 : (nbr_time_out <= 0 ? 10 : nbr_time_out)))
-                kill(pid, SIGSEGV);
+                kill(client->flagResponse->pid, SIGSEGV);
             usleep(10000);
         
         }
-
         delete(sysEnv);
         read_data_from_cgi();
-
         buff.clear();
-        buff  << "HTTP/1.1 " << statusCodes["200"] \
-                << (tmp_string.find("Content-Type:") > tmp_string.length() ? "text/html\r\n" : "\r\n")\
+        buff  << "HTTP/1.1 " << (tmp_string.find("Location: ") > tmp_string.length() ? statusCodes["200"] : statusCodes["301"]) \
+                << (tmp_string.find("Content-Type: ") > tmp_string.length() ? "\r\nContent-Type: text/html\r\n" : "\r\n")\
                 << "Content-Length: " << client->flagResponse->content_length \
                 << "\r\n" << tmp_string;
         if (sendHeader(client->socket, buff.str().c_str(), buff.str().length()))
@@ -82,15 +80,12 @@ int responseClient::execute_cgi_file()
             unlink((client->flagResponse->tmp_file.str() + "post").c_str());
             drop_client(client);
         }
-        std::cout << "cgi send" << std::endl;
     }
     return 0;
 }
 
 std::string& responseClient::pars_cgi_uri()
 {
-    std::cout << "pars CGI arg " << std::endl;
-
     found = uri.find("?");
     aEnv.push_back("QUERY_STRING=" + uri.substr(found + 1));
     uri = uri.substr(0, uri.find("?"));
@@ -99,7 +94,6 @@ std::string& responseClient::pars_cgi_uri()
 
 int    responseClient::handle_cgi() 
 {
-    std::cout << "run cgi scripts " << std::endl;
     // Create file for communication between parent and cgi processes
     client->flagResponse->tmp_file << "/tmp/" << get_current_time('m') <<  "_cgi_" << client->socket;
 
@@ -138,10 +132,7 @@ int    responseClient::handle_cgi()
     
     sysEnv = new char*[aEnv.size() + 1];
     for (size_t i=0; i<aEnv.size(); i++)
-    {
        sysEnv[i] = (char *)aEnv[i].c_str();
-        std::cout << "ss == " << sysEnv[i] << std::endl;
-    }
     sysEnv[aEnv.size()] = NULL;
 /////----- execute cgi file  
     execute_cgi_file();

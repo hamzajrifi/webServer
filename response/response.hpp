@@ -23,6 +23,7 @@ struct  Flag_respose{
     bool        isReading;
     bool        ifautoIndex;
     bool        isLocation;
+    pid_t       pid;
 }; 
 
 class  responseClient{
@@ -48,6 +49,7 @@ class  responseClient{
     std::string uri;
     std::string root;
     std::string index;
+    std::string uplaodFile;
     bool        is_redi;
     bool        is_method_allowed;
 

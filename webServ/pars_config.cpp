@@ -56,6 +56,10 @@ size_t location_pars(std::vector<config_file> *block_server, std::vector<std::st
                 tmp_node.path = temp_split_data[j].substr(ifind + 1);
             else if (temp_split_data[j].compare(0, 9, "cgi_path ") == 0)
                 tmp_node.cgi_path = temp_split_data[j].substr(ifind + 1);
+            else if (temp_split_data[j].compare(0, 12, "upload_file ") == 0)
+                tmp_node.upload_file= temp_split_data[j].substr(ifind + 1);
+            else if (temp_split_data[j].compare(0, 12, "upload_redi ") == 0)
+                tmp_node.upload_redi= temp_split_data[j].substr(ifind + 1);
         }
         j++;
     }

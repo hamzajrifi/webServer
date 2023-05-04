@@ -2,7 +2,6 @@
 
 int	responseClient::noLocation()
 {
-    std::cout << "----------- No location ---------" << std::endl;
     if (block_server[nBlock].index[0] == '/')
         index = block_server[nBlock].list_of_location[nbrLocation].index.substr(1);
     return 0;
@@ -25,7 +24,6 @@ int responseClient::check_if_location_matched()
             && (client->request_data_struct->path[block_server[nBlock].list_of_location[nLocation].path.length()] == '\0' || \
             client->request_data_struct->path[block_server[nBlock].list_of_location[nLocation].path.length()] == '/'))
         {
-            std::cout << "------------------------- location is matched -------------------------\n" << std::endl;
             client->flagResponse->isLocation = true;
             if (!i++ || (block_server[nBlock].list_of_location.size() > 1 && nLocation > 0 
             && lenPathLocation <= block_server[nBlock].list_of_location[nLocation].path.length()))
@@ -33,6 +31,8 @@ int responseClient::check_if_location_matched()
                 is_method_allowed = false;
                 is_redi = false;
                 nbrLocation = nLocation;
+                uplaodFile = block_server[nBlock].list_of_location[nLocation].upload_file;
+
                 locationMatched = block_server[nBlock].list_of_location[nLocation].path;
                 if (!block_server[nBlock].list_of_location[nLocation].allow_method.empty() && check_method())
                 {
@@ -47,7 +47,6 @@ int responseClient::check_if_location_matched()
                     is_redi = true;
                     continue;
                 }
-                    // std::cout << "root " << block_server[nBlock].list_of_location[nLocation].returno << std::endl;
                 if (block_server[nBlock].list_of_location[nLocation].index[0] == '/')
                     index = block_server[nBlock].list_of_location[nLocation].index.substr(1);
                 else
@@ -59,11 +58,17 @@ int responseClient::check_if_location_matched()
     }
     if (is_method_allowed)
         return send_error_status("405");
-    if (is_redi)
-    {
-        return send_error_status("301");
-    }
     if (i)
         client->request_data_struct->path = rootLocation.length() == 0 ? "/" : rootLocation ;
+    if (is_redi)
+    {
+        if (!block_server[nBlock].list_of_location[nbrLocation].upload_redi.empty())
+        {
+            root_directory_if_existe();
+            return methodeFunction[client->request_data_struct->method](*this);
+        }
+        else
+            return send_error_status("301");
+    }
     return 0;
 }

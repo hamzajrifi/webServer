@@ -15,29 +15,21 @@ int     responseClient::get_default_error_page(std::string nbStatus)
 
 int	responseClient::error_301()
 {
-	std::cout << "jsut inside 301" << std::endl;
-	
-	buff 	<< "HTTP/1.1 301 Moved Permanently \r\nLocation: " \
-			<< index << "\r\n";
-	
-	std::cout << buff.str() << std::endl;
-	
+	buff 	<< "HTTP/1.1 301 Moved Permanently \r\nLocation: " << \
+			client->request_data_struct->host  << "/" << index << "\r\n";
 	if (sendHeader(client->socket, &buff.str()[0], buff.str().length()))
 		return -1;
-	std::cout <<"socket = " << client->socket << std::endl;
 	drop_client(client);
 	return 301;
 }
 
 int     responseClient::send_error_status(std::string nbStatus)
 {
-	std::cout << "error pages == " << nbStatus << std::endl;
 	//  error Not Implemented
-	if (!nbStatus.compare("501") || !nbStatus.compare("413") || !nbStatus.compare("403") || !nbStatus.compare("500"))
-		return (get_default_error_page(nbStatus));
 	if(!nbStatus.compare("301"))
 		return error_301();
-		std::cout << "uri error  " << root + block_server[nBlock].error_page_kv[nbStatus] << std::endl;
+	if (block_server[nBlock].error_page_kv[nbStatus].empty())
+		return (get_default_error_page(nbStatus));
 	client->flagResponse->file_RW.open(root + block_server[nBlock].error_page_kv[nbStatus], std::ios::in);
 	if (!client->flagResponse->file_RW || block_server[nBlock].error_page_kv[nbStatus].empty())
 		get_default_error_page(nbStatus);

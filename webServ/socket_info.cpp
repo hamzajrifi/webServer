@@ -11,9 +11,9 @@ int create_socket(const char* host, const char* port)
     struct addrinfo *bind_address;
     getaddrinfo(host, port, &filter, &bind_address);
 
-    std::cout << "Creating socket..." << std::endl;
     int socket_listen;
     socket_listen = socket(bind_address->ai_family, bind_address->ai_socktype, bind_address->ai_protocol);
+    std::cout << "Creating socket..." << socket_listen << std::endl;
     if (!(socket_listen >= 0))
     {
         std::cout << "socket() failed. " << std::endl;

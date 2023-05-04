@@ -97,7 +97,6 @@ size_t	responseClient::list_current_directory(std::string _uri)
         }
             buff2 << "</tbody></table> </body> </html> ";
         closedir( dirp );
-        std::cout << ">> " << locationMatched  << "--" << client->request_data_struct->path << std::endl;
         client->flagResponse->content_length  = buff2.str().length();
         return 403;
     }
@@ -186,6 +185,7 @@ int responseClient::ft_response()
         return (send_error_status(client->request_data_struct->nbrStatus.c_str()));
     else
     {
+
         client->flagResponse->isReading = true;
         // ---- ----  check server block ---- ---- //
         int sfind = client->request_data_struct->host.find(":");
@@ -194,18 +194,21 @@ int responseClient::ft_response()
         nbrstatus = 0;
         // ---- ----  check Block Server ---- ---- //
         noServerMatched = false;
-        for(size_t nServer=0; nServer < block_server.size() - 1; nServer++)
+        size_t bsize = block_server.size();
+        if (block_server.size() == 1)
+            bsize = 2;
+        for(size_t nServer=0; nServer < bsize - 1; nServer++)
         {
-            //std::cout << "size body : " << block_server[nServer].max_number << std::endl;
             if (!client->request_data_struct->method.find("POST") && client->request_data_struct->body.size() > block_server[nServer].max_number)
                 return send_error_status("413");
             if (((!block_server[nServer].server_name.compare(host_serv) || !block_server[nServer].server.compare(host_serv)) \
                 && !block_server[nServer].port.compare(port_serv)) 
                 || noServerMatched)
             {
+                nBlock = nServer;
                 root = block_server[nServer].root;
                 index = block_server[nServer].index;
-                nBlock = nServer;
+                uplaodFile = block_server[nBlock].upload_file;
                  // ---- ----  matching location ---- ---- //
                 if (block_server[nServer].list_of_location.size() == 0)
                     noLocation();
@@ -214,7 +217,6 @@ int responseClient::ft_response()
                 // ---- ----  get current root Directory ---- ---- //
                 if (root_directory_if_existe())
                     return nbrstatus;
-
                 //----- ----- check uri if is valid
                 client->flagResponse->file_RW.close();
                 client->flagResponse->file_RW.open(uri);
@@ -222,15 +224,14 @@ int responseClient::ft_response()
                 if (client->flagResponse->isLocation && !block_server[nBlock].list_of_location[nbrLocation].cgi_path.empty() 
                     && client->flagResponse->file_RW)
                 {
-                    std::cout << "----- CGI -----" << std::endl;
-                    char *ptr = getcwd(NULL, 256);
-                    if (!ptr)
-                        return send_error_status("500");
-                    std::string currentDe(ptr);
-                    free(ptr);
-                    int fd = open((currentDe + "/" + block_server[nBlock].list_of_location[nbrLocation].cgi_path).c_str(), O_RDWR);
+                    int fd = open(("/" + block_server[nBlock].list_of_location[nbrLocation].cgi_path).c_str(), O_RDONLY);
                     if (fd < 0)
                         send_error_status("500");
+                    else if (client->request_data_struct->method == "DELETE")
+                    {
+                        send_error_status("403");
+                        client->flagResponse->isReading = false;
+                    }
                     else
                         handle_cgi();
                     close(fd);

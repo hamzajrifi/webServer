@@ -77,38 +77,40 @@ int responseClient::getMethod(responseClient& cl)
 
 int responseClient::postMethod(responseClient& cl)
 {
-    char ptr[256];
-    cl.tmp_string = getcwd(ptr, 256);
-    if (cl.block_server[cl.nBlock].upload_file.empty())
-        cl.block_server[cl.nBlock].upload_file = cl.tmp_string + "/public/upload";
+    if (cl.uplaodFile.empty())
+        cl.uplaodFile = cl.root + "/public/upload";
     else
-        cl.block_server[cl.nBlock].upload_file = cl.tmp_string + "/" + cl.block_server[cl.nBlock].upload_file + "/";
-    if (stat((cl.block_server[cl.nBlock].upload_file).c_str(), &cl.info) != 0)
-        return cl.send_error_status("500");
-        cl.buff << "HTTP/1.1 " << cl.statusCodes["201"] \
-                << "\r\nContent-Type: "  << "text/plain"\
-                << "\r\nContent-Length: " << "7" \
-                << "\r\nConnection: close\r\n"\
-                << "\r\nCreated";
-    if (cl.sendHeader(cl.client->socket, cl.buff.str().c_str(), cl.buff.str().length()))
-        return -1;
+        cl.uplaodFile = cl.root + cl.uplaodFile + "/";
 
+    if (stat((cl.uplaodFile).c_str(), &cl.info) != 0)
+        return cl.send_error_status("500");
+    if (!cl.is_redi)
+    {
+        cl.buff << "HTTP/1.1 " << cl.statusCodes["201"] \
+                    << "\r\nContent-Type: "  << "text/plain"\
+                    << "\r\nContent-Length: " << "7" \
+                    << "\r\nConnection: close\r\n"\
+                    << "\r\nCreated";
+        if (cl.sendHeader(cl.client->socket, cl.buff.str().c_str(), cl.buff.str().length()))
+            return -1;
+    }
+    
     //// check data conetent type request and Create and open a file
     std::stringstream nameFile ;
 
-    nameFile << cl.block_server[cl.nBlock].upload_file << "/Up_" << cl.get_current_time('m') << get_lastEnd_content_type(cl.client->request_data_struct->content_Type.c_str());
+    nameFile << cl.uplaodFile << "/Up_" << cl.get_current_time('m') << get_lastEnd_content_type(cl.client->request_data_struct->content_Type.c_str());
     std::ofstream PostFile(nameFile.str());
-    std::cout << "file name "<< cl.client->request_data_struct->content_Type <<std::endl;
     // Write in to the file
     PostFile << cl.client->request_data_struct->body;
     PostFile.close();
+    if (cl.is_redi)
+        return cl.send_error_status("301");
     drop_client(cl.client);
     return 0;
 }
 
 int responseClient::deleteMethod(responseClient& cl)
 {
-    std::cout << "DELETE methode" << " \n URI = " << cl.client->request_data_struct->path << std::endl;
     cl.client->request_data_struct->path = cl.client->request_data_struct->path;
 
     cl.tmp_string = cl.root + cl.client->request_data_struct->path;
