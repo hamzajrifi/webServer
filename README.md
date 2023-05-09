@@ -16,7 +16,7 @@ We want to make it clear that our project is not intended to be used in producti
 
 Our project was created for educational purposes, as a way to learn more about how web servers work, particularly in comparison to popular web servers like Nginx and Apache. While our web server can serve static and dynamic content and handle HTTP status codes, there are many security concerns that we have not addressed and we do not encourage anyone to use it in a production environment.
 
-Features
+**Features**
 - HTTP 1.0 and 1.1 protocols
 - most of the HTTP status codes
 - multi clients.
