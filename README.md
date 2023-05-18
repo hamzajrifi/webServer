@@ -27,7 +27,7 @@ Our project was created for educational purposes, as a way to learn more about h
 [hands-on-network-programming-with-c-learn-socket-programming-in-c-and-write-secure-and-optimized-network-code-true-pdf-1nbsped-9781789349863_compress .pdf](https://github.com/hamzajrifi/webServer/files/11466364/hands-on-network-programming-with-c-learn-socket-programming-in-c-and-write-secure-and-optimized-network-code-true-pdf-1nbsped-9781789349863_compress.pdf)
 
 ![artone](https://user-images.githubusercontent.com/82651196/236962561-0112fd02-afb0-4a17-9db9-fac86e4c41c4.png)
-<img width="2428" alt="Screen Shot 2023-05-12 at 6 00 55 PM" src="https://github.com/hamzajrifi/webServer/assets/112334569/21ef9c3d-3e3f-4c84-a4aa-d24b2f474b48">
+<img width="3126" alt="Screen Shot 2023-05-18 at 6 51 45 PM" src="https://github.com/hamzajrifi/webServer/assets/82651196/a9a00ca5-e88b-4ffb-9d60-76118c8df3d4">
 https://coggle.it/diagram/ZFjiviHgHRe8f6T2/t/request
 
 
