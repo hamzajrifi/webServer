@@ -1,6 +1,6 @@
 # webServer
 
-In this project, I worked together with my friend, Hamid Alqoh. Our collaboration was invaluable, as it allowed us to share our ideas and knowledge, and to learn from each other's strengths and weaknesses. We are proud of the progress we have made in this project and the insights we have gained from building a HTTP web server from scratch. We hope that this project will inspire others to learn more about web servers and the technologies that power the internet.
+In this project, I worked together with my friend, Hamid Alaqoh. Our collaboration was invaluable, as it allowed us to share our ideas and knowledge, and to learn from each other's strengths and weaknesses. We are proud of the progress we have made in this project and the insights we have gained from building a HTTP web server from scratch. We hope that this project will inspire others to learn more about web servers and the technologies that power the internet.
 
 Our web server is a HTTP server designed for serving static and dynamic content. It is similar in functionality to popular web servers like Nginx, but with a simpler configuration and more streamlined architecture.
 
